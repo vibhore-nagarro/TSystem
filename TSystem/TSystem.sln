@@ -32,7 +32,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{75DF4267
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSystem.Core.UnitTests", "Tests\TSystem.Core.UnitTests\TSystem.Core.UnitTests.csproj", "{494081A0-81EC-458D-BF58-44815513819F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSystem.Common", "TSystem.Common\TSystem.Common.csproj", "{E26A3229-69FB-4A7E-9149-4949009F7B57}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TSystem.Common", "TSystem.Common\TSystem.Common.csproj", "{E26A3229-69FB-4A7E-9149-4949009F7B57}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TSystem.API", "TSystem.API\TSystem.API.csproj", "{152A08FA-7956-4998-ACFC-E7F21FA0D121}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,6 +61,10 @@ Global
 		{E26A3229-69FB-4A7E-9149-4949009F7B57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E26A3229-69FB-4A7E-9149-4949009F7B57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E26A3229-69FB-4A7E-9149-4949009F7B57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{152A08FA-7956-4998-ACFC-E7F21FA0D121}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{152A08FA-7956-4998-ACFC-E7F21FA0D121}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{152A08FA-7956-4998-ACFC-E7F21FA0D121}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{152A08FA-7956-4998-ACFC-E7F21FA0D121}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

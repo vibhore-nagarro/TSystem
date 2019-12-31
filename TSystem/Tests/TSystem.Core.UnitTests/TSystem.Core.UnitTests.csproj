@@ -13,4 +13,9 @@
     <PackageReference Include="coverlet.collector" Version="1.0.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\..\TSystem.Core\TSystem.Core.csproj" />
+    <ProjectReference Include="..\..\TSystem.Entities\TSystem.Entities.csproj" />
+  </ItemGroup>
+
 </Project>

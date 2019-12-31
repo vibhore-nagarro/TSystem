@@ -7,6 +7,7 @@ using System.Timers;
 using TSystem.Core.Contracts;
 using TSystem.Core.Events;
 using TSystem.Core.Models;
+using TSystem.Core.Strategies;
 using TSystem.Entities;
 using TSystem.Entities.Enums;
 
@@ -87,7 +88,7 @@ namespace TSystem.Core
 
         private void InitializeStrategies()
         {
-            //strategies.Add(new HeikinAshi());
+            strategies.Add(new HeikinAshi());
         }
 
         private void InitializeTimers()
