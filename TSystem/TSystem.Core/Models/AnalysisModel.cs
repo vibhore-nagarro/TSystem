@@ -58,6 +58,9 @@ namespace TSystem.Core.Models
 
         public decimal LTP { get; set; }
         public long TotalVolume { get; set; }
+        public decimal LastTradePL { get; set; }
+        public decimal PeriodPeak { get; set; }
+        public decimal PeriodTrough { get; set; }
         public bool IsPositionOpen { get; set; }
         //public TradeType PositionType { get; set; }
         #endregion

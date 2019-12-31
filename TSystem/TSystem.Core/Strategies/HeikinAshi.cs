@@ -20,10 +20,10 @@ namespace TSystem.Core.Strategies
 
             LongEntry(signal, model);
             ShortEntry(signal, model);
-            //ShortExit(signal, model);
-            //LongExit(signal, model);
+            ShortExit(signal, model);
+            LongExit(signal, model);
 
-            //signal.Price = model.LTP;
+            signal.Price = model.LTP;
 
             return signal;
         }
