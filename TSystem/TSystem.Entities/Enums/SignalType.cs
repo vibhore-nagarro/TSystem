@@ -6,6 +6,7 @@ namespace TSystem.Entities.Enums
 {
     public enum SignalType
     {
+        None,
         LongEntry,
         ShortEntry,
         LongExit,
