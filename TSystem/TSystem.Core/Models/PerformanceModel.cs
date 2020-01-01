@@ -24,5 +24,7 @@ namespace TSystem.Core.Models
         public decimal PeriodHigh { get; set; }
         public decimal PeriodLow { get; set; } = decimal.MaxValue;
         public decimal PeriodReturn { get; set; }
+        public decimal WinRate { get; set; }
+        public decimal LossRate { get; set; }
     }
 }

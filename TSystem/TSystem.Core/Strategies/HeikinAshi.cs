@@ -18,18 +18,20 @@ namespace TSystem.Core.Strategies
             Signal signal = new Signal();
             if (model.HeikinAshi.Count < 5) return signal;
 
-            LongEntry(signal, model);
-            ShortEntry(signal, model);
-            ShortExit(signal, model);
-            LongExit(signal, model);
+            signal = LongEntry(model);
+            signal = ShortEntry(model);
+            signal = ShortExit(model);
+            signal = LongExit(model);
 
             signal.Price = model.LTP;
 
             return signal;
         }
 
-        private void ShortEntry(Signal signal, AnalysisModel model)
+        private Signal ShortEntry(AnalysisModel model)
         {
+            Signal signal = new Signal();
+
             var currentCandle = model.HeikinAshi.Last();
             uint lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
             var previousCandle = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
@@ -64,10 +66,13 @@ namespace TSystem.Core.Strategies
                     signal.Price = currentCandle.Close;
                 }
             }
+            return signal;
         }
 
-        private void LongEntry(Signal signal, AnalysisModel model)
+        private Signal LongEntry(AnalysisModel model)
         {
+            Signal signal = new Signal();
+
             var currentCandle = model.HeikinAshi.Last();
             uint lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
             var previousCandle = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
@@ -90,10 +95,14 @@ namespace TSystem.Core.Strategies
                     signal.Price = currentCandle.Close;
                 }
             }
+
+            return signal;
         }
 
-        private void LongExit(Signal signal, AnalysisModel model)
+        private Signal LongExit(AnalysisModel model)
         {
+            Signal signal = new Signal();
+
             var currentCandle = model.HeikinAshi.Last();
             var previousCandle = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
 
@@ -107,10 +116,14 @@ namespace TSystem.Core.Strategies
                     signal.Price = currentCandle.Close;
                 }
             }
+
+            return signal;
         }
 
-        private void ShortExit(Signal signal, AnalysisModel model)
+        private Signal ShortExit(AnalysisModel model)
         {
+            Signal signal = new Signal();
+
             var currentCandle = model.HeikinAshi.Last();
             var previousCandle = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
 
@@ -124,6 +137,8 @@ namespace TSystem.Core.Strategies
                     signal.Price = currentCandle.Close;
                 }
             }
+
+            return signal;
         }
 
         private bool ConfirmPastTrend(AnalysisModel model)
