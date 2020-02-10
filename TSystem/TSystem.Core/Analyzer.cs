@@ -44,7 +44,8 @@ namespace TSystem.Core
         private uint instrument;
         private AnalysisModel analysisModel = new AnalysisModel();
         private PerformanceModel performanceModel = new PerformanceModel();
-        private List<IStrategy> strategies = new List<IStrategy>();        
+        private List<IStrategy> strategies = new List<IStrategy>();
+        private ITradeManager tradeManager = new TradeManager();
 
         Timer secondsTimer = new Timer(Seconds);
         Timer minutesTimer = new Timer(Minutes);
@@ -80,7 +81,7 @@ namespace TSystem.Core
 
         public Signal Analyze()
         {
-            Signal signal = new Signal() { Price = 0, Type = SignalType.None };
+            Signal signal = new Signal() { Price = 0, SignalType = SignalType.None };
             foreach (IStrategy strategy in strategies)
             {
                 signal = strategy.Apply(analysisModel);
@@ -202,10 +203,10 @@ namespace TSystem.Core
                 analysisModel.HeikinAshi.Last().Print();
                 analysisModel.HeikinAshi.Any();
             }
-            if (signal.Type != SignalType.None)
+            if (signal.SignalType != SignalType.None)
             {
                 OnSignalRecieved(signal);
-                Debug.WriteLine($"{signal.Type} @ {signal.Price}");
+                Debug.WriteLine($"{signal.SignalType} @ {signal.Price}");
             }
         }
 
@@ -215,11 +216,11 @@ namespace TSystem.Core
             if (Model.Signals.Count > 0)
             {
                 Signal lastSignal = Model.Signals.Last();
-                if (signal.Type == SignalType.LongExit && lastSignal.Type == SignalType.LongEntry)
+                if (signal.IsLongExit() && lastSignal.IsLongEntry())
                 {
                     pl += signal.Price - lastSignal.Price;
                 }
-                if (signal.Type == SignalType.ShortExit && lastSignal.Type == SignalType.ShortEntry)
+                if (signal.IsShortExit() && signal.IsShortEntry())
                 {
                     pl += lastSignal.Price - signal.Price;
                 }
@@ -245,8 +246,8 @@ namespace TSystem.Core
                     this.PerformanceModel.TotalGain += pl;
                 if (pl < 0)
                     this.PerformanceModel.TotalLoss += pl;
-                this.PerformanceModel.AvgGain = this.PerformanceModel.TotalGain / this.PerformanceModel.Signals;
-                this.PerformanceModel.AvgLoss = this.PerformanceModel.TotalLoss / this.PerformanceModel.Signals;
+                this.PerformanceModel.AvgGain = this.PerformanceModel.Wins > 0 ? this.PerformanceModel.TotalGain / this.PerformanceModel.Wins : 0;
+                this.PerformanceModel.AvgLoss = this.PerformanceModel.Losses > 0 ? this.PerformanceModel.TotalLoss / this.PerformanceModel.Losses : 0;
                 this.PerformanceModel.PeriodOpen = this.Model.Candles.First().Open;
                 this.PerformanceModel.PeriodClose = this.Model.Candles.Last().Close;
                 if (this.PerformanceModel.PeriodHigh < this.Model.Candles.Last().High)
@@ -261,18 +262,21 @@ namespace TSystem.Core
         }
 
         string fileData = "";
-        public void BackTest()
+        public Signal BackTest()
         {
+            //System.ExecuteOrders(Model.LTP);
             var signal = Analyze();
-            if (signal.Type != SignalType.None)
+
+            if (signal.SignalType != SignalType.None)
             {
                 decimal pl = ComputePerformanceModel(signal);
 
                 var date = analysisModel.HeikinAshi.Last().TimeStamp;
                 analysisModel.Signals.Add(signal);
-                Debug.WriteLine($"{signal.Type} @ {signal.Price}");
-                fileData = fileData + date + $", {signal.Type} , {signal.Price}" + Environment.NewLine;
+                Debug.WriteLine($"{signal.SignalType} @ {signal.Price}");
+                fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
             }
+            return signal;
         }
 
         public void DumpOutput()

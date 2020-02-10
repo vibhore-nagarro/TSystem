@@ -4,10 +4,10 @@ using System.Text;
 
 namespace TSystem.Entities.Enums
 {
-    public enum SignalType
+    public enum OrderCategory
     {
-        None,
-        Entry,
-        Exit,
+        Market,
+        Limit,
+        StoplossLimit,
     }
 }

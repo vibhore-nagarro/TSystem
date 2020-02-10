@@ -36,6 +36,11 @@ namespace TSystem.Core
             analyzer.Update(tickData);
         }
 
+        public void BackTest()
+        {
+            
+        }
+
         private void Analyzer_SignalRecievedEvent(object sender, SignalRecievedEventArgs e)
         {
         }

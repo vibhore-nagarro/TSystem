@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TSystem.Entities.Enums;
 
 namespace TSystem.Entities
 {
@@ -10,22 +11,22 @@ namespace TSystem.Entities
         public int Quantity { get; set; }
         public decimal Average { get; set; }
         public decimal LTP { get; set; }
+        public TradeType TradeType { get; set; }
         public decimal PnL
         {
             get
             {
-                if (Quantity > 0)
+                if (TradeType == TradeType.Long)
                 {
                     return LTP - Average;
                 }
-                else if (Quantity < 0)
+                else if (TradeType == TradeType.Short)
                 {
                     return Average - LTP;
                 }
                 return 0m;
             }
         }
-        public decimal Change { get; set; }
-        public decimal ChangePercentage { get; set; }
+        public decimal ChangePercentage { get { return PnL * 100 / Average; } }
     }
 }

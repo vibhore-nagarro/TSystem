@@ -13,4 +13,8 @@
     <ProjectReference Include="..\TSystem.Entities\TSystem.Entities.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="BackTest\" />
+  </ItemGroup>
+
 </Project>

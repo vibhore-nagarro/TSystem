@@ -6,6 +6,7 @@ namespace TSystem.Entities.Enums
 {
     public enum TradeType
     {
+        None,
         Long,
         Short,
     }

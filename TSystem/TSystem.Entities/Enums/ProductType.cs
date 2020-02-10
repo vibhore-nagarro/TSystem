@@ -4,10 +4,9 @@ using System.Text;
 
 namespace TSystem.Entities.Enums
 {
-    public enum SignalType
+    public enum ProductType
     {
-        None,
-        Entry,
-        Exit,
+        CNC,
+        MIS,
     }
 }

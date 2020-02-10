@@ -164,7 +164,7 @@ namespace TSystem.Core.Models
             int start, count;
             double[] slowK = new double[Candles.Count];
             double[] slowD = new double[Candles.Count];
-            TA.Core.Stoch(0, Candles.Count - 1, Candles.Select(x => (double)x.High).ToArray(), Candles.Select(x => (double)x.Low).ToArray(), Candles.Select(x => (double)x.Close).ToArray(), periodK, periodD, Core.MAType.Sma, periodDN, Core.MAType.Sma, out start, out count, slowK, slowD);
+            TA.Core.Stoch(0, Candles.Count - 1, Candles.Select(x => (double)x.High).ToArray(), Candles.Select(x => (double)x.Low).ToArray(), Candles.Select(x => (double)x.Close).ToArray(), periodK, periodD, TA.Core.MAType.Sma, periodDN, TA.Core.MAType.Sma, out start, out count, slowK, slowD);
             for (int i = 0; i < count; ++i)
             {
                 stochastic.Add(new Stochastic() { Value = (decimal)slowD[i], Signal = (decimal)slowK[i] });
