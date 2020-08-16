@@ -1,5 +1,6 @@
 .container {
     width: 100%;
+    min-width: 1280px;
     margin: 20px auto;
     .toolbar {
         margin: 20px auto;
@@ -10,11 +11,11 @@
     }
     .holdings-table {
       .symbol {
-        width: 20%;
+        width: 15%;
         max-width: 100px;
       }
       .qty {
-        width: 15%;
+        width: 10%;
       }
       .price {
         width: 12%;
@@ -36,6 +37,12 @@
       }
       .addSign {
         color: green;
+        font-size: 24px;
+        font-weight: bolder;
+        margin: 0px;
+      }
+      .removeSign {
+        color: red;
         font-size: 24px;
         font-weight: bolder;
         margin: 0px;

@@ -18,9 +18,10 @@
             <tr *ngFor="let holding of holdings">
                 <td class="symbol">{{holding.tradingsymbol}}</td>
                 <td class="qty">{{holding.quantity}}</td>
-                <td class="price">{{holding.averagePrice}}</td>
-                <td class="price">{{holding.lastPrice}}</td>
-                <td class="price" [ngClass]="{'positive': holding.netChange > 0, 'negative': holding.netChange < 0}">{{holding.pnL}}</td>
+                <td class="price">{{holding.averagePrice.toFixed(2)}}</td>
+                <td class="price">{{holding.lastPrice.toFixed(2)}}</td>
+                <td class="price">{{(holding.lastPrice * holding.quantity).toFixed(2)}}</td>
+                <td class="price" [ngClass]="{'positive': holding.netChange > 0, 'negative': holding.netChange < 0}">{{holding.pnL.toFixed(2)}}</td>
                 <td class="price" [ngClass]="{'positive': holding.netChange > 0, 'negative': holding.netChange < 0}">{{holding.netChange.toFixed(2)}}%</td>
                 <td [ngClass]="{'positive': holding.netChange > 0, 'negative': holding.netChange < 0}">{{holding.dayChange.toFixed(2)}}%</td>
             </tr>

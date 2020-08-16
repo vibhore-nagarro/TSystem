@@ -11,7 +11,7 @@ import { PortfolioComponent } from '../portfolio.component';
 })
 export class CreatePortfolioComponent implements OnInit, OnDestroy {
 
-  columns = ['Symbol', 'Qty', 'Avg. Price', 'LTP', 'P&L', 'Net. chg', 'Day. chg', ' '];
+  columns = ['Symbol', 'Qty', 'Avg. Price', 'LTP', 'Cur. val', 'P&L', 'Net. chg', 'Day. chg', ' '];
   allHoldings: IPortfolioHolding[] = [];
   private subscriptions: Subscription[] = [];
   portfolio: IPortfolio;

@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
 })
 export class PortfolioComponent implements OnInit, OnDestroy {
 
-  columns = ['Symbol', 'Qty', 'Avg. Price', 'LTP', 'P&L', 'Net. chg', 'Day. chg'];
+  columns = ['Symbol', 'Qty', 'Avg. Price', 'LTP', 'Cur. val', 'P&L', 'Net. chg', 'Day. chg'];
   allHoldings: IPortfolioHolding[] = [];
   holdings: IPortfolioHolding[] = [];
   allPortfolios: IPortfolioInfo[] = [];
