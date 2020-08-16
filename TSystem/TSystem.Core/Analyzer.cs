@@ -234,9 +234,9 @@ namespace TSystem.Core
                     this.PerformanceModel.Losses++;
                 this.PerformanceModel.WinRate = Decimal.Round((this.PerformanceModel.Wins * 100.0m) / this.PerformanceModel.Signals, 2);
                 this.PerformanceModel.LossRate = Decimal.Round((this.PerformanceModel.Losses * 100.0m) / this.PerformanceModel.Signals, 2);
-                if (Model.LastTradePL > 0 && pl > 0)
+                if (Model.LastTradePL >= 0 && pl > 0)
                     this.PerformanceModel.WinningStreak++;
-                else if(Model.LastTradePL > 0 && pl < 0)
+                else if(Model.LastTradePL >= 0 && pl < 0)
                     this.PerformanceModel.LosingStreak++;
                 if (this.PerformanceModel.MaxGain < pl)
                     this.PerformanceModel.MaxGain = pl;
