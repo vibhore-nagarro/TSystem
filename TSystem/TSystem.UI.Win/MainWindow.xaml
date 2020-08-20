@@ -1,0 +1,24 @@
+﻿<Window x:Class="TSystem.UI.Win.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TSystem.UI.Win"
+        mc:Ignorable="d" WindowState="Maximized"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <ListView ItemsSource="{Binding Signals}">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.TimeStamp, StringFormat=d}" Header="TimeStamp" />
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.TradeType}" Header="TradeType" />
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.SignalType}" Header="SignalType" />
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.Strength}" Header="Strength" />
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.Price}" Header="Price" />
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding TradePL}" Header="Trade P/L" />
+                    <GridViewColumn Width="100" DisplayMemberBinding="{Binding PL}" Header="P/L" />
+                </GridView>
+            </ListView.View>
+        </ListView>
+    </Grid>
+</Window>

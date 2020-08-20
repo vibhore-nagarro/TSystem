@@ -5,8 +5,9 @@ using System.Text;
 namespace TSystem.Core.Models
 {
     public class PerformanceModel
-    {
+    {        
         public decimal PL { get; set; }
+        public decimal LastTradePL { get; set; }
         public uint Signals { get; set; }
         public uint Wins { get; set; }
         public uint Losses { get; set; }

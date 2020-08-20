@@ -32,7 +32,7 @@ namespace TSystem.Core.UnitTests
         private void LoadData(Analyzer analyzer)
         {
             //IEnumerable<string> quotes = File.ReadAllLines(@"D:\StockData\USD_INR Historical Data.csv").Skip(1).Reverse();
-            IEnumerable<string> quotes = File.ReadAllLines(@"D:\StockData\Nifty 50.csv").Skip(1).Reverse();
+            IEnumerable<string> quotes = File.ReadAllLines(@"D:\StockData\Nifty 50.csv").Skip(1);
             foreach (string quote in quotes)
             {
                 string[] fields = quote.Split(',');

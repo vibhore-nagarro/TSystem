@@ -206,7 +206,7 @@ namespace TSystem.Core
             if (signal.SignalType != SignalType.None)
             {
                 OnSignalRecieved(signal);
-                Debug.WriteLine($"{signal.SignalType} @ {signal.Price}");
+                Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price}");
             }
         }
 
@@ -216,15 +216,19 @@ namespace TSystem.Core
             if (Model.Signals.Count > 0)
             {
                 Signal lastSignal = Model.Signals.Last();
-                if (signal.IsLongExit() && lastSignal.IsLongEntry())
+                if (lastSignal.IsLongEntry() && (signal.IsLongExit() || signal.IsShortEntry()))
                 {
                     pl += signal.Price - lastSignal.Price;
                 }
-                if (signal.IsShortExit() && signal.IsShortEntry())
+                if (lastSignal.IsShortEntry() && (signal.IsShortExit() || signal.IsLongEntry() ))
                 {
                     pl += lastSignal.Price - signal.Price;
                 }
-                if (pl == 0) return pl;
+                if (pl == 0)
+                {
+                    this.PerformanceModel.LastTradePL = pl;
+                    return pl;
+                }
 
                 this.PerformanceModel.PL += pl;
                 this.PerformanceModel.Signals++;
@@ -256,6 +260,7 @@ namespace TSystem.Core
                     this.PerformanceModel.PeriodLow = this.Model.Candles.Last().Low;
                 this.PerformanceModel.PeriodReturn = ((this.PerformanceModel.PeriodClose - this.PerformanceModel.PeriodOpen) * 100) / this.PerformanceModel.PeriodOpen;
 
+                this.PerformanceModel.LastTradePL = pl;
                 Model.LastTradePL = pl;
             }
             return pl;
@@ -273,8 +278,13 @@ namespace TSystem.Core
 
                 var date = analysisModel.HeikinAshi.Last().TimeStamp;
                 analysisModel.Signals.Add(signal);
-                Debug.WriteLine($"{signal.SignalType} @ {signal.Price}");
-                fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
+
+                Debug.WriteLine($"P/L - {pl}");
+                //if (pl > 0)
+                {
+                    Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price} on {signal.TimeStamp.ToShortDateString()}");                    
+                    fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
+                }
             }
             return signal;
         }

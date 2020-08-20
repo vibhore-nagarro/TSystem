@@ -67,6 +67,9 @@ namespace TSystem.Core.Models
             }
         }
 
+        public Candle LeadingHeikinAshi { get; set; }
+        public Candle LeadingCandle { get; set; }
+
         public decimal ProfitLoss
         {
             get;
