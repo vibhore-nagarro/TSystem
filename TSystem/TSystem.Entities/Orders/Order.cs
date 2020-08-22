@@ -14,7 +14,11 @@ namespace TSystem.Entities
         public TradeType TradeType { get; set; }
         public bool IsExecuted { get; set; }
 
-        public abstract Order Execute(decimal price);
+        public virtual Order Execute(decimal price)
+        {
+            Portfolio.Instance.Positions.Add(new Position() { Average = price, Quantity = this.Quantity, TradeType = this.TradeType, LTP = price });
+            return this;
+        }
 
         public Order()
         {

@@ -12,34 +12,6 @@ namespace TSystem.Core
     {
         IRiskManager riskManager = new RiskManager();        
 
-        public void ProcessSignal(Signal signal, Analyzer analyzer)
-        {
-            if(signal.IsShortExit())
-            {
-                Position shortPosition = System.Portfolio.Positions.FirstOrDefault();
-                if(shortPosition != null)
-                {
-
-                }
-            }
-            if (signal.IsLongExit())
-            {
-                Position longPosition = System.Portfolio.Positions.FirstOrDefault();
-                if (longPosition != null)
-                {
-
-                }
-            }
-            if(signal.IsLongEntry())
-            {
-
-            }
-            if (signal.IsShortEntry())
-            {
-
-            }
-        }
-
         public void PlaceMarketOrder(TradeType tradeType, ProductType productType, uint quantity)
         {
             System.OrderBook.AddOrder(new MarketOrder() { TradeType = tradeType, ProductType = productType, Quantity = quantity });

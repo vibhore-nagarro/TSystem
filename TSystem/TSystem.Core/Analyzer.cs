@@ -87,6 +87,11 @@ namespace TSystem.Core
             {
                 signal = strategy.Apply(analysisModel);
                 signal = ApplyFilter1(signal);
+
+                if(signal.SignalType != SignalType.None && signal.Strength > 50)
+                {
+                    tradeManager.PlaceStoplossLimitOrder(signal.TradeType, ProductType.MIS, 1, signal.Price);
+                }
             }
             return signal;
         }
@@ -301,7 +306,8 @@ namespace TSystem.Core
         string fileData = "";
         public Signal BackTest()
         {
-            //System.ExecuteOrders(Model.LTP);
+            System.RunAll(analysisModel);
+
             var signal = Analyze();
 
             if (signal.SignalType != SignalType.None)

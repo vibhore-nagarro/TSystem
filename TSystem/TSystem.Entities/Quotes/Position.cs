@@ -8,7 +8,7 @@ namespace TSystem.Entities
     public class Position
     {
         public string InstrumentCode { get; set; }
-        public int Quantity { get; set; }
+        public uint Quantity { get; set; }
         public decimal Average { get; set; }
         public decimal LTP { get; set; }
         public TradeType TradeType { get; set; }
