@@ -92,6 +92,16 @@ namespace TSystem.Core.Models
             return Candles.Select(candle => (candle.Open + candle.High + candle.Low + candle.Close) / 4).ToList();
         }
 
+        public decimal AverageCandleBody()
+        {
+            return Candles.Average(c => c.Body);
+        }
+
+        public decimal AverageCandleLength()
+        {
+            return Candles.Average(c => c.Length);
+        }
+
         public ulong AverageVolume()
         {
             return (ulong)Candles.Average(x => (decimal)x.Volume);
@@ -130,7 +140,7 @@ namespace TSystem.Core.Models
             double[] macdHistogram = new double[Candles.Count];
             List<MACD> macdData = new List<MACD>();
 
-            TA.Core.Macd(0, Candles.Count - 1, Candles.Select(quote => (float)quote.Close).ToArray(), fastPeriod, slowPeriod, signalPeriod, out startIndex, out count, macd, macdSignal, macdHistogram);
+            TA.Core.Macd(0, Candles.Count - 1, Candles.Select(quote => (double)quote.Close).ToArray(), fastPeriod, slowPeriod, signalPeriod, out startIndex, out count, macd, macdSignal, macdHistogram);
 
             for (int index = 0; index < macd.Length; ++index)
             {
@@ -149,14 +159,14 @@ namespace TSystem.Core.Models
             return macdData;
         }
 
-        public List<decimal> RSI(int period)
+        public decimal RSI(int period = 14)
         {
             int startIndex, count;
             double[] rsi = new double[Candles.Count];
 
-            TA.Core.Rsi(0, Candles.Count - 1, Candles.Select(quote => quote.Close).Cast<float>().ToArray(), period, out startIndex, out count, rsi);
+            TA.Core.Rsi(0, Candles.Count - 1, Candles.Select(quote => (double)quote.Close).ToArray(), period, out startIndex, out count, rsi);
 
-            return rsi.Select(x => (decimal)x).ToList();
+            return rsi.Select(x => (decimal)x).Where(x => x != 0).LastOrDefault();
         }
 
         public List<Stochastic> Stochastic(int periodK = 14, int periodD = 3, int periodDN = 3)

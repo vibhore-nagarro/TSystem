@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Timers;
 using TSystem.Core.Contracts;
 using TSystem.Core.Events;
@@ -85,7 +86,38 @@ namespace TSystem.Core
             foreach (IStrategy strategy in strategies)
             {
                 signal = strategy.Apply(analysisModel);
+                signal = ApplyFilter1(signal);
             }
+            return signal;
+        }
+
+        /// <summary>
+        /// Filter signals by avergae candle body/gap (up/down) opening
+        /// </summary>
+        /// <param name="signal"></param>
+        /// <returns></returns>
+        private Signal ApplyFilter1(Signal signal)
+        {
+            if (analysisModel.Candles.Count < 2)
+                return signal;
+            var rsi = analysisModel.RSI();
+            var avgPrice = analysisModel.AveragePrice().Average();
+            var avgCandleBody = analysisModel.AverageCandleBody();
+            var avgVol = analysisModel.AverageVolume();
+
+            var currentCandle = analysisModel.Candles.Last();
+            var previousCandle = analysisModel.Candles.ElementAt(analysisModel.Candles.Count - 2);
+            if (signal.SignalType == SignalType.Entry)
+            {
+                // Reset signal if the deciding candle was too small
+                if (currentCandle.Body < (avgCandleBody / 2))
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+
+                // Reset signal if it opened with gap up/down
+                if ((currentCandle.Open - previousCandle.Open) > avgCandleBody)
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+            }
+
             return signal;
         }
 

@@ -145,7 +145,7 @@ namespace TSystem.Entities
         public void Print()
         {
             var color = IsGreen ? "Green" : "Red";
-            Console.WriteLine($"O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
+            Console.WriteLine($"T={TimeStamp.ToShortDateString()}, O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
         }
 
         #endregion
