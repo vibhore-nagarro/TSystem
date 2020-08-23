@@ -48,11 +48,13 @@ namespace TSystem.Core
             Orders.RemoveAll(order => order.Id == orderId);
         }
 
-        public void ExecuteOrders(decimal price)
+        public void ExecuteOrders(Candle candle)
         {
             var copyOfOrders = Orders.ToList();
             foreach (Order order in copyOfOrders)
             {
+                decimal price = order.TradeType == Entities.Enums.TradeType.Long ? candle.Low : candle.High;
+
                 Order newOrder = order.Execute(price);
 
                 if (newOrder.IsExecuted)

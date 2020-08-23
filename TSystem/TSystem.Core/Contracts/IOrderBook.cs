@@ -11,6 +11,6 @@ namespace TSystem.Core.Contracts
         void RemoveOrder(Order order);
 
         void RemoveOrderbyId(long orderId);
-        void ExecuteOrders(decimal price);
+        void ExecuteOrders(Candle candle);
     }
 }

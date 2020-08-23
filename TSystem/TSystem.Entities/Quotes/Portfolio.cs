@@ -43,7 +43,16 @@ namespace TSystem.Entities
             if (Positions.Count == 0)
                 Positions.Add(new Position() { Average = averagePrice, Quantity = quanity, TradeType = tradeType, LTP = averagePrice });
             else
-                Positions.First().Quantity += quanity;
+            {
+                var position = Positions.First();
+                if(position.TradeType == tradeType)
+                    position.Quantity += quanity;
+                else
+                {
+                    Positions.Add(new Position() { Average = averagePrice, Quantity = quanity, TradeType = tradeType, LTP = averagePrice });
+                }                    
+            }
+            Debug.WriteLine($"P/L - {PnL}");
         }
     }
 }

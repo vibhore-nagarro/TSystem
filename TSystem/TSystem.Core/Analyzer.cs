@@ -301,23 +301,36 @@ namespace TSystem.Core
         string fileData = "";
         public Signal BackTest()
         {
-            System.RunAll(analysisModel);
+            //System.RunAll(analysisModel);
 
             var signal = Analyze();
+            var lastSignal = analysisModel.Signals.LastOrDefault();
 
             if (signal.SignalType != SignalType.None)
             {
-                int quanity = 1;
-                tradeManager.PlaceStoplossLimitOrder(signal.TradeType, ProductType.MIS, quanity, signal.Price, signal.Price);
+                if (lastSignal == null || ((lastSignal.IsLongEntry() && (signal.IsLongExit() || signal.IsShortEntry())) || 
+                     lastSignal.IsShortEntry() && (signal.IsShortExit() || signal.IsLongEntry()) ||
+                     lastSignal.IsLongExit() && (signal.IsLongEntry() || signal.IsShortEntry())   ||
+                     lastSignal.IsShortExit() && (signal.IsShortEntry() || signal.IsLongEntry())))
+                {
+                    System.RunAll(analysisModel);
 
-                decimal pl = ComputePerformanceModel(signal);
+                    int quanity = 1;
+                    tradeManager.PlaceStoplossLimitOrder(signal.TradeType, ProductType.MIS, quanity, signal.Price, signal.Price);
 
-                var date = analysisModel.HeikinAshi.Last().TimeStamp;
-                analysisModel.Signals.Add(signal);
+                    decimal pl = ComputePerformanceModel(signal);
 
-                Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price} on {signal.TimeStamp.ToShortDateString()}");
-                fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
-            }
+                    var date = analysisModel.HeikinAshi.Last().TimeStamp;
+                    analysisModel.Signals.Add(signal);
+
+                    Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price} on {signal.TimeStamp.ToShortDateString()}");
+                    fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
+                }
+                else
+                {
+                    signal = new Signal() { SignalType = SignalType.None, TradeType = TradeType.None };
+                }
+            }            
             return signal;
         }
 
