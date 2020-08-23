@@ -13,29 +13,8 @@ namespace TSystem.Entities
         public List<Position> Positions { get; set; } = new List<Position>();
         public List<Holding> Holdings { get; set; } = new List<Holding>();
 
-        private decimal pnl = 0.0m;
-        public decimal PnL
-        {
-            get
-            {
-                pnl = pnl + CurrentPnL;
-                return pnl;
-            }
-        }
-
-        public decimal CurrentPnL
-        {
-            get
-            {
-                decimal totalPL = 0m;
-                foreach (var p in Positions)
-                {
-                    decimal pl = (p.PnL < -0.05m) ? -0.05m : p.PnL;
-                    totalPL += pl;
-                }
-                return totalPL;
-            }
-        }
+        public decimal PnL { get; set; }
+        public decimal LastTradePnL { get; set; }
 
         public void AddOrUpdatePosition(decimal averagePrice, int quanity, TradeType tradeType)
         {
@@ -49,10 +28,21 @@ namespace TSystem.Entities
                     position.Quantity += quanity;
                 else
                 {
-                    Positions.Add(new Position() { Average = averagePrice, Quantity = quanity, TradeType = tradeType, LTP = averagePrice });
+                    int remainingQuantity = position.Quantity + quanity;
+                    if(remainingQuantity == 0)
+                    {
+                        LastTradePnL = position.PnL < -0.05m ? -0.05m : position.PnL;
+                        PnL += LastTradePnL;
+                        Positions.Remove(position);
+                    }
+                    else
+                    {
+                        position.Quantity = remainingQuantity;
+                        LastTradePnL = position.PnL < -0.05m ? -0.05m : position.PnL;
+                        PnL += LastTradePnL;                        
+                    }
                 }                    
             }
-            Debug.WriteLine($"P/L - {PnL}");
         }
     }
 }
