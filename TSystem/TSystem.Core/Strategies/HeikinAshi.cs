@@ -41,11 +41,13 @@ namespace TSystem.Core.Strategies
             var currentHeikinAshi = model.HeikinAshi.Last();
             var currentCandle = model.Candles.Last();
 
-            uint lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
-            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
+            uint lastHeikinAshiIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
+            uint lastIndex = model.Candles.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
+
+            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
-            if (currentHeikinAshi.TimeStamp.Day == 3 && currentHeikinAshi.TimeStamp.Month == 4)
+            if (currentHeikinAshi.TimeStamp.Day == 30 && currentHeikinAshi.TimeStamp.Month == 3)
             {
 
             }
@@ -112,8 +114,10 @@ namespace TSystem.Core.Strategies
             var currentHeikinAshi = model.HeikinAshi.Last();
             var currentCandle = model.Candles.Last();
 
-            uint lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
-            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
+            uint lastHeikinAshiIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
+            uint lastIndex = model.Candles.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
+
+            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)

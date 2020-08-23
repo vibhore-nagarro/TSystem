@@ -8,8 +8,8 @@ namespace TSystem.Core.Contracts
 {
     public interface ITradeManager
     {
-        void PlaceMarketOrder(TradeType tradeType, ProductType productType, uint quantity);
-        void PlaceLimitOrder(TradeType tradeType, ProductType productType, uint quantity, decimal limitPrice);
-        void PlaceStoplossLimitOrder(TradeType tradeType, ProductType productType, uint quantity, decimal limitPrice);
+        void PlaceMarketOrder(TradeType tradeType, ProductType productType, int quantity);
+        void PlaceLimitOrder(TradeType tradeType, ProductType productType, int quantity, decimal limitPrice);
+        void PlaceStoplossLimitOrder(TradeType tradeType, ProductType productType, int quantity, decimal limitPrice, decimal triggerPrice);
     }
 }

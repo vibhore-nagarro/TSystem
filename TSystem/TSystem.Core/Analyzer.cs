@@ -86,12 +86,7 @@ namespace TSystem.Core
             foreach (IStrategy strategy in strategies)
             {
                 signal = strategy.Apply(analysisModel);
-                signal = ApplyFilter1(signal);
-
-                if(signal.SignalType != SignalType.None && signal.Strength > 50)
-                {
-                    tradeManager.PlaceStoplossLimitOrder(signal.TradeType, ProductType.MIS, 1, signal.Price);
-                }
+                signal = ApplyFilter1(signal);                
             }
             return signal;
         }
@@ -312,17 +307,16 @@ namespace TSystem.Core
 
             if (signal.SignalType != SignalType.None)
             {
+                int quanity = 1;
+                tradeManager.PlaceStoplossLimitOrder(signal.TradeType, ProductType.MIS, quanity, signal.Price, signal.Price);
+
                 decimal pl = ComputePerformanceModel(signal);
 
                 var date = analysisModel.HeikinAshi.Last().TimeStamp;
                 analysisModel.Signals.Add(signal);
 
-                Debug.WriteLine($"P/L - {pl}");
-                //if (pl > 0)
-                {
-                    Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price} on {signal.TimeStamp.ToShortDateString()}");                    
-                    fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
-                }
+                Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price} on {signal.TimeStamp.ToShortDateString()}");
+                fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
             }
             return signal;
         }

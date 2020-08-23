@@ -15,14 +15,14 @@ namespace TSystem.Entities
             {
                 if (price <= this.TriggerPrice)
                 {
-                    IsExecuted = true;
+                    base.Execute(price);
                 }
             }
             else if (TradeType == TradeType.Short)
             {
                 if (price >= this.TriggerPrice)
                 {
-                    IsExecuted = true;
+                    base.Execute(price);
                 }
             }
             return this;

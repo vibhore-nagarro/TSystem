@@ -9,12 +9,34 @@ namespace TSystem.Core
 {
     public class OrderBook : IOrderBook
     {
+        private OrderBook()
+        {
+        }
         public static IOrderBook Instance { get; } = new OrderBook();
         public List<Order> Orders { get; set; } = new List<Order>();
 
         public void AddOrder(Order order)
         {
-            Orders.Add(order);
+            if(Orders.Count(o => o.TradeType == order.TradeType) == 0)
+                Orders.Add(order);
+            else
+            {
+                var exitsingOrder = Orders.First(o => o.TradeType == order.TradeType);
+                exitsingOrder.Quantity = order.Quantity;    
+                if(exitsingOrder is LimitOrder || order is LimitOrder)
+                {
+                    LimitOrder limitOrder = order as LimitOrder;
+                    LimitOrder exitsingLimitOrder = exitsingOrder as LimitOrder;
+                    exitsingLimitOrder.LimitPrice = limitOrder.LimitPrice;
+                }
+                if (exitsingOrder is StoplossLimitOrder || order is StoplossLimitOrder)
+                {
+                    StoplossLimitOrder limitOrder = order as StoplossLimitOrder;
+                    StoplossLimitOrder exitsingLimitOrder = exitsingOrder as StoplossLimitOrder;
+                    exitsingLimitOrder.LimitPrice = limitOrder.LimitPrice;
+                    exitsingLimitOrder.TriggerPrice = limitOrder.TriggerPrice;
+                }
+            }
         }
         public void RemoveOrder(Order order)
         {
@@ -32,9 +54,9 @@ namespace TSystem.Core
             foreach (Order order in copyOfOrders)
             {
                 Order newOrder = order.Execute(price);
-                RemoveOrderbyId(order.Id);
-                if (!newOrder.IsExecuted)
-                    AddOrder(newOrder);
+
+                if (newOrder.IsExecuted)
+                    RemoveOrderbyId(order.Id);
             }
         }
     }

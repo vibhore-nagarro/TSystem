@@ -10,19 +10,19 @@ namespace TSystem.Core
 {
     public class TradeManager : ITradeManager
     {
-        IRiskManager riskManager = new RiskManager();        
+        IRiskManager riskManager = RiskManager.Instance;        
 
-        public void PlaceMarketOrder(TradeType tradeType, ProductType productType, uint quantity)
+        public void PlaceMarketOrder(TradeType tradeType, ProductType productType, int quantity)
         {
-            System.OrderBook.AddOrder(new MarketOrder() { TradeType = tradeType, ProductType = productType, Quantity = quantity });
+            OrderBook.Instance.AddOrder(new MarketOrder() { TradeType = tradeType, ProductType = productType, Quantity = quantity });
         }
-        public void PlaceLimitOrder(TradeType tradeType, ProductType productType, uint quantity, decimal limitPrice)
+        public void PlaceLimitOrder(TradeType tradeType, ProductType productType, int quantity, decimal limitPrice)
         {
-            System.OrderBook.AddOrder(new LimitOrder(limitPrice) { TradeType = tradeType, ProductType = productType, Quantity = quantity });
+            OrderBook.Instance.AddOrder(new LimitOrder(limitPrice) { TradeType = tradeType, ProductType = productType, Quantity = quantity });
         }
-        public void PlaceStoplossLimitOrder(TradeType tradeType, ProductType productType, uint quantity, decimal limitPrice)
+        public void PlaceStoplossLimitOrder(TradeType tradeType, ProductType productType, int quantity, decimal limitPrice, decimal triggerPrice)
         {
-            System.OrderBook.AddOrder(new StoplossLimitOrder(limitPrice) { TradeType = tradeType, ProductType = productType, Quantity = quantity });
+            OrderBook.Instance.AddOrder(new StoplossLimitOrder(limitPrice) { TriggerPrice = triggerPrice, TradeType = tradeType, ProductType = productType, Quantity = quantity });
         }
     }
 }

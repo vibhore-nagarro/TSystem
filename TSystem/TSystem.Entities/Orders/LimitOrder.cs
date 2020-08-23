@@ -7,7 +7,7 @@ namespace TSystem.Entities
 {
     public class LimitOrder : Order
     {
-        public decimal LimitPrice { get; private set; }
+        public decimal LimitPrice { get; set; }
         public LimitOrder(decimal price)
         {
             LimitPrice = price;
@@ -17,11 +17,11 @@ namespace TSystem.Entities
         {
             if(TradeType == TradeType.Long)
             {
-                if (price <= this.LimitPrice) IsExecuted = true;
+                if (price <= this.LimitPrice) base.Execute(price);
             }
             else if (TradeType == TradeType.Short)
             {
-                if (price >= this.LimitPrice) IsExecuted = true;
+                if (price >= this.LimitPrice) base.Execute(price);
             }
             return this;
         }

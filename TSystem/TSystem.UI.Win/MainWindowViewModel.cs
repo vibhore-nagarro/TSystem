@@ -30,6 +30,7 @@ namespace TSystem.UI.Win
 
         public ObservableCollection<Analysis> Signals { get; set; } = new ObservableCollection<Analysis>();
 
+        decimal ppl;
         public void OnLoad()
         {
             LoadData();
@@ -69,9 +70,10 @@ namespace TSystem.UI.Win
                     Signals.Add(new Analysis()
                     {
                         Signal = signal,
-                        TradePL = analyzer.PerformanceModel.LastTradePL,
-                        PL = analyzer.PerformanceModel.PL,
+                        TradePL = Portfolio.Instance.PnL - ppl,
+                        PL = Portfolio.Instance.PnL,
                     });
+                    ppl = Portfolio.Instance.PnL;
                 }
             }
             analyzer.DumpOutput();

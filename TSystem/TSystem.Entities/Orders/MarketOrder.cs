@@ -8,7 +8,7 @@ namespace TSystem.Entities
     {
         public override Order Execute(decimal price)
         {
-            this.IsExecuted = true;
+            base.Execute(price);
             return this;
         }
     }

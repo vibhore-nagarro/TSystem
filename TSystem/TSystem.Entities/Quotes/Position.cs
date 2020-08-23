@@ -8,7 +8,7 @@ namespace TSystem.Entities
     public class Position
     {
         public string InstrumentCode { get; set; }
-        public uint Quantity { get; set; }
+        public int Quantity { get; set; }
         public decimal Average { get; set; }
         public decimal LTP { get; set; }
         public TradeType TradeType { get; set; }
@@ -18,11 +18,11 @@ namespace TSystem.Entities
             {
                 if (TradeType == TradeType.Long)
                 {
-                    return LTP - Average;
+                    return (LTP - Average);
                 }
                 else if (TradeType == TradeType.Short)
                 {
-                    return Average - LTP;
+                    return (Average - LTP);
                 }
                 return 0m;
             }

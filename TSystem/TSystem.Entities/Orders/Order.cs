@@ -9,14 +9,15 @@ namespace TSystem.Entities
     {
         static long id = 1;
         public long Id { get; }
-        public uint Quantity { get; set; }        
+        public int Quantity { get; set; }        
         public ProductType ProductType { get; set; }
         public TradeType TradeType { get; set; }
         public bool IsExecuted { get; set; }
 
         public virtual Order Execute(decimal price)
         {
-            Portfolio.Instance.Positions.Add(new Position() { Average = price, Quantity = this.Quantity, TradeType = this.TradeType, LTP = price });
+            Portfolio.Instance.AddOrUpdatePosition(price, Quantity = this.Quantity, TradeType = this.TradeType);
+            this.IsExecuted = true;
             return this;
         }
 

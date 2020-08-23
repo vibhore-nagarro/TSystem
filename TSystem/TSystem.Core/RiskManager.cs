@@ -8,6 +8,9 @@ namespace TSystem.Core
 {
     public class RiskManager : IRiskManager
     {
+        private RiskManager()
+        {
+        }
         public static IRiskManager Instance { get; } = new RiskManager();
         private IList<IRule> Rules { get; set; } = new List<IRule>();
         public void Run(AnalysisModel model)
@@ -17,18 +20,5 @@ namespace TSystem.Core
                 rule.Check(model);
             }
         }
-    }
-
-    public interface IRule
-    {
-        bool Check(AnalysisModel model);
-    }
-
-    public abstract class Rule : IRule
-    {
-        public abstract bool Check(AnalysisModel model);
-        public virtual void ComputePL()
-        {
-        }
-    }
+    }    
 }
