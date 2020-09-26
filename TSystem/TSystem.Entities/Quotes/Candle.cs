@@ -9,6 +9,7 @@ namespace TSystem.Entities
     {
         #region Properties
 
+        public uint Instrument { get; set; }
         public uint Index { get; set; }
         public bool IsRed => Open > Close;
 
