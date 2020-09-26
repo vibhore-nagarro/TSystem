@@ -12,7 +12,7 @@
                 <ListView ItemsSource="{Binding Candles}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=t}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=d}" Header="TimeStamp" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding Open}" Header="Open" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding High}" Header="High" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding Low}" Header="Low" />
@@ -49,7 +49,7 @@
                 <ListView ItemsSource="{Binding HeikinAshi}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=t}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=d}" Header="TimeStamp" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding Open}" Header="Open" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding High}" Header="High" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding Low}" Header="Low" />
@@ -86,13 +86,11 @@
                 <ListView ItemsSource="{Binding Signals}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.TimeStamp, StringFormat=t}" Header="TimeStamp" />
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.TradeType}" Header="TradeType" />
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.SignalType}" Header="SignalType" />
-                            <!--<GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.Strength}" Header="Strength" />-->
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Signal.Price}" Header="Price" />
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TradePL}" Header="Trade P/L" />
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding PL}" Header="P/L" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=t}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TradeType}" Header="TradeType" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding SignalType}" Header="SignalType" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Strength}" Header="Strength" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Price}" Header="Price" />
                         </GridView>
                     </ListView.View>
                 </ListView>

@@ -19,11 +19,11 @@ namespace TSystem.Core
             CandleReceived?.Invoke(this, new CandleReceivedArgs() { Candle = candle, Type = type });
         }
 
-        public async void Start()
+        public void Start()
         {
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
-            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/690691/day?user_id=ZW2177&oi=1&from=2018-10-28&to=2019-04-29&ciqrandom=1601103441117", Method.GET, DataFormat.Json);
+            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/690691/day?user_id=ZW2177&oi=1&from=2019-09-26&to=2020-09-26&ciqrandom=1601116242950", Method.GET, DataFormat.Json);
             request.AddHeader("authorization", Token);
 
             dynamic result = JsonConvert.DeserializeObject(client.Execute(request).Content);
