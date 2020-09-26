@@ -32,7 +32,7 @@
       Executable="$targetnametoken$.exe"
       EntryPoint="TSystem.UI.UWP.App">
       <uap:VisualElements
-        DisplayName="TSystem.UI.UWP"
+        DisplayName="Trade System"
         Square150x150Logo="Assets\Square150x150Logo.png"
         Square44x44Logo="Assets\Square44x44Logo.png"
         Description="TSystem.UI.UWP"
@@ -40,10 +40,14 @@
         <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png"/>
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
       </uap:VisualElements>
+      <uap:ApplicationContentUriRules>
+        <uap:Rule Type="include" Match="https://localhost:44340/" WindowsRuntimeAccess="none"/>
+      </uap:ApplicationContentUriRules>
     </Application>
   </Applications>
 
   <Capabilities>
     <Capability Name="internetClient" />
+    <uap:Capability Name="sharedUserCertificates"/>
   </Capabilities>
 </Package>

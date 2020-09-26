@@ -86,7 +86,7 @@
                 <ListView ItemsSource="{Binding Signals}">
                     <ListView.View>
                         <GridView>
-                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=t}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=d}" Header="TimeStamp" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding TradeType}" Header="TradeType" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding SignalType}" Header="SignalType" />
                             <GridViewColumn Width="100" DisplayMemberBinding="{Binding Strength}" Header="Strength" />

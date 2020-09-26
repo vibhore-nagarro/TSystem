@@ -45,6 +45,8 @@ namespace TSystem.UI.Win
             connection.On<Signal>("ReceiveSignal", OnSignal);
 
             await connection.StartAsync();
+            DateTime t;
+            
         }
 
         private void OnCandle(Candle candle)

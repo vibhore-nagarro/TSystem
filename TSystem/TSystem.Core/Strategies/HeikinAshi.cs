@@ -17,6 +17,8 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
             if (model.HeikinAshi.Count < 5) return signal;
+            if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.First();
+            if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.First();
 
             var newSignal = LongEntry(model);
             if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;

@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http.Connections;
+using Microsoft.AspNetCore.SignalR.Client;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -23,12 +25,36 @@ namespace TSystem.UI.UWP
 
 
 
-        public MainPageViewModel()
+        public async void OnLoad()
         {
-            Candles.Add(new Candle());
+            await Start();
         }
-        public void OnLoad()
+
+        public async Task Start()
         {
+            var connection = new HubConnectionBuilder()
+                                 .WithUrl("https://localhost:44340/analysis", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
+                                 .Build();
+            connection.On<Candle>("ReceiveCandle", OnCandle);
+            connection.On<Candle>("ReceiveHeikinAshi", OnHeikinAshi);
+            connection.On<Signal>("ReceiveSignal", OnSignal);
+
+            await connection.StartAsync();
+        }
+
+        private void OnCandle(Candle candle)
+        {
+            Candles.Add(candle);
+        }
+
+        private void OnHeikinAshi(Candle candle)
+        {
+            HeikinAshi.Add(candle);
+        }
+
+        private void OnSignal(Signal signal)
+        {
+            Signals.Add(signal);
         }
     }
 }
