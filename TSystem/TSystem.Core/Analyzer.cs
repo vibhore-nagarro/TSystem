@@ -60,7 +60,7 @@ namespace TSystem.Core
             this.instrument = instrument;
 
             InitializeStrategies();
-            InitializeTimers();
+            /*InitializeTimers()*/;
         }
 
         #endregion
@@ -86,7 +86,9 @@ namespace TSystem.Core
             foreach (IStrategy strategy in strategies)
             {
                 signal = strategy.Apply(analysisModel);
-                signal = ApplyFilter1(signal);                
+                //signal = ApplyFilter1(signal);
+                signal.Price = analysisModel.Candles.Last().Close;
+                signal.TimeStamp = analysisModel.Candles.Last().TimeStamp;
             }
             return signal;
         }
@@ -227,7 +229,7 @@ namespace TSystem.Core
         {
             BuildCandle(e.SignalTime);
             BuildHekinAshiCandle();
-            OnCandleRecieved(Model.HeikinAshi.Last());
+            //OnCandleRecieved(Model.HeikinAshi.Last());
 
             var signal = Analyze();
             if (analysisModel.HeikinAshi.Any())

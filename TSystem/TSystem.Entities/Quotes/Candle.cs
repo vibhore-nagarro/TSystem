@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace TSystem.Entities
@@ -145,7 +146,8 @@ namespace TSystem.Entities
         public void Print()
         {
             var color = IsGreen ? "Green" : "Red";
-            Console.WriteLine($"T={TimeStamp.ToShortDateString()}, O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
+            //Debug.WriteLine($"T={TimeStamp.ToShortDateString()}, O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
+            Debug.WriteLine($"T={TimeStamp.ToShortTimeString()}, O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
         }
 
         #endregion
