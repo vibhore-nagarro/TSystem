@@ -16,10 +16,7 @@ namespace TSystem.Core
 {
     public class Analyzer
     {
-        #region Constants
-
-        const int Seconds = 1000;
-        const int Minutes = 1 * 60 * Seconds;
+        #region Constants        
 
         #endregion
 
@@ -33,11 +30,6 @@ namespace TSystem.Core
             SignalRecieved?.Invoke(this, new SignalRecievedEventArgs(signal));
         }
 
-        private void OnCandleRecieved(Candle candle)
-        {
-            CandleRecieved?.Invoke(this, new CandleRecievedEventArgs(candle));
-        }
-
         #endregion
 
         #region Data Members
@@ -48,9 +40,6 @@ namespace TSystem.Core
         private List<IStrategy> strategies = new List<IStrategy>();
         private ITradeManager tradeManager = new TradeManager();
 
-        Timer secondsTimer = new Timer(Seconds);
-        Timer minutesTimer = new Timer(Minutes);
-
         #endregion
 
         #region Constructor
@@ -60,7 +49,6 @@ namespace TSystem.Core
             this.instrument = instrument;
 
             InitializeStrategies();
-            /*InitializeTimers()*/;
         }
 
         #endregion
@@ -126,13 +114,6 @@ namespace TSystem.Core
         private void InitializeStrategies()
         {
             strategies.Add(new HeikinAshi());
-        }
-
-        private void InitializeTimers()
-        {
-            minutesTimer.Elapsed += Minute_Timer_Elapsed;
-            secondsTimer.Elapsed += SecondsTimer_Elapsed;
-            secondsTimer.Start();
         }
 
         private void BuildCandle(DateTime signalTime)
@@ -216,27 +197,13 @@ namespace TSystem.Core
             return candle;
         }
 
-        private void SecondsTimer_Elapsed(object sender, ElapsedEventArgs e)
+        public void ProcessCandle(Candle candle)
         {
-            if (e.SignalTime.Second == 0)
-            {
-                minutesTimer.Start();
-                secondsTimer.Stop();
-                secondsTimer.Dispose();
-            }
-        }
-        private void Minute_Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            BuildCandle(e.SignalTime);
+            Model.Candles.Add(candle);
             BuildHekinAshiCandle();
-            //OnCandleRecieved(Model.HeikinAshi.Last());
 
             var signal = Analyze();
-            if (analysisModel.HeikinAshi.Any())
-            {
-                analysisModel.HeikinAshi.Last().Print();
-                analysisModel.HeikinAshi.Any();
-            }
+            
             if (signal.SignalType != SignalType.None)
             {
                 OnSignalRecieved(signal);
