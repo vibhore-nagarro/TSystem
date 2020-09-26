@@ -53,6 +53,7 @@ namespace TSystem.Core
         public void Start()
         {
             marketData.CandleReceived += MarketData_CandleReceived;
+            marketData.Start();
         }
 
         private void MarketData_CandleReceived(object sender, CandleReceivedArgs e)
@@ -78,7 +79,7 @@ namespace TSystem.Core
             analyzer.Model.Candles.Add(candle);
             analyzer.BuildHekinAshiCandle();
             OnCandleCreated(candle);
-            OnCandleCreated(analyzer.Model.HeikinAshi.Last());
+            OnHeikinAshiRecieved(analyzer.Model.HeikinAshi.Last());
 
             var signal = analyzer.Analyze();
 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TSystem.Entities;
 
 namespace TSystem.Core
@@ -18,7 +19,7 @@ namespace TSystem.Core
             CandleReceived?.Invoke(this, new CandleReceivedArgs() { Candle = candle, Type = type });
         }
 
-        public void Start()
+        public async void Start()
         {
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
@@ -37,7 +38,7 @@ namespace TSystem.Core
                     Low = candle[3],
                     Volume = candle[5],
                 });
-                OnCandleReceived(candle, CandleType.Day);
+                OnCandleReceived(candles.Last(), CandleType.Day);
             }
                        
         }

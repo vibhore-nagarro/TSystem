@@ -12,13 +12,20 @@ namespace TSystem.API
     public class System
     {
         public static AnalysisManager analysisManager;
-        public static void Start()
+        static HubConnection connection;
+        public async static void Start()
         {
             analysisManager = new AnalysisManager();
             analysisManager.CandleRecieved += AnalysisManager_CandleRecieved;
             analysisManager.SignalRecieved += AnalysisManager_SignalRecieved;
-            analysisManager.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;
-            
+            analysisManager.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;                       
+
+            connection = new HubConnectionBuilder()
+                                 .WithUrl("https://localhost:44340/analysis", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
+                                 .Build();
+
+            await connection.StartAsync();
+
             analysisManager.Start();
         }        
 
@@ -38,30 +45,15 @@ namespace TSystem.API
         }
 
         public static async Task SendCandle(Candle candle)
-        {
-            var connection = new HubConnectionBuilder()
-                                 .WithUrl("https://example.com/chathub", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
-                                 .Build();
-
-            await connection.StartAsync();
+        {            
             await connection.SendAsync("SendCandle", candle);
         }
         public static async Task SendHeikinAshi(Candle candle)
         {
-            var connection = new HubConnectionBuilder()
-                                 .WithUrl("https://example.com/chathub", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
-                                 .Build();
-
-            await connection.StartAsync();
             await connection.SendAsync("SendHeikinAshi", candle);
         }
         public static async Task SendSignal(Signal signal)
         {
-            var connection = new HubConnectionBuilder()
-                                 .WithUrl("https://example.com/chathub", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
-                                 .Build();
-
-            await connection.StartAsync();
             await connection.SendAsync("SendSignal", signal);
         }
     }
