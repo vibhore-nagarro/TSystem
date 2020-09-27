@@ -17,8 +17,8 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
             if (model.HeikinAshi.Count < 5) return signal;
-            if (0.02m > model.HeikinAshi.Last().Body) return signal;
-            if (0.02m > model.Candles.Last().Body) return signal;
+            if (0.01m > model.HeikinAshi.Last().Body) return signal;
+            if (0.01m > model.Candles.Last().Body) return signal;
 
             if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.Last();
             if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.Last();
@@ -52,7 +52,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
-            if (currentHeikinAshi.TimeStamp.Day == 23 && currentHeikinAshi.TimeStamp.Month == 4)
+            if (currentHeikinAshi.TimeStamp.Day == 21 && currentHeikinAshi.TimeStamp.Month == 5)
             {
 
             }
@@ -195,22 +195,11 @@ namespace TSystem.Core.Strategies
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
             {
-                if (currentHeikinAshi.Close < previousHeikinAshi.Open || currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
+                if (currentHeikinAshi.Close < previousHeikinAshi.Open || currentHeikinAshi.Body < previousHeikinAshi.Body 
+                    || currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Short;
-                    signal.Strength = 50;
-
-                    signal.Price = currentHeikinAshi.Close;
-                }
-            }
-
-            if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
-            {
-                if (currentHeikinAshi.Body < previousHeikinAshi.Body || currentHeikinAshi.Close < previousHeikinAshi.Open)
-                {
-                    signal.SignalType = SignalType.Exit;
-                    signal.TradeType = TradeType.Long;
                     signal.Strength = 50;
 
                     signal.Price = currentHeikinAshi.Close;
@@ -242,19 +231,8 @@ namespace TSystem.Core.Strategies
 
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
             {
-                if (currentHeikinAshi.Close > previousHeikinAshi.Open || currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
-                {
-                    signal.SignalType = SignalType.Exit;
-                    signal.TradeType = TradeType.Short;
-                    signal.Strength = 50;
-
-                    signal.Price = currentHeikinAshi.Close;
-                }
-            }
-
-            if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
-            {
-                if (currentHeikinAshi.Body < previousHeikinAshi.Body || currentHeikinAshi.Close > previousHeikinAshi.Open)
+                if (currentHeikinAshi.Close > previousHeikinAshi.Open || currentHeikinAshi.Body < previousHeikinAshi.Body 
+                    || currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Short;

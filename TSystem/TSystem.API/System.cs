@@ -18,7 +18,7 @@ namespace TSystem.API
             analysisManager = new AnalysisManager();
             analysisManager.CandleRecieved += AnalysisManager_CandleRecieved;
             analysisManager.SignalRecieved += AnalysisManager_SignalRecieved;
-            analysisManager.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;                       
+            analysisManager.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;
 
             connection = new HubConnectionBuilder()
                                  .WithUrl("https://localhost:44340/analysis", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
@@ -27,7 +27,7 @@ namespace TSystem.API
             await connection.StartAsync();
 
             analysisManager.Start();
-        }        
+        }
 
         private static async void AnalysisManager_SignalRecieved(object sender, Core.Events.SignalRecievedEventArgs e)
         {
@@ -45,16 +45,25 @@ namespace TSystem.API
         }
 
         public static async Task SendCandle(Candle candle)
-        {            
-            await connection.SendAsync("SendCandle", candle);
+        {
+            if (connection.State == HubConnectionState.Connected)
+            {
+                await connection.SendAsync("SendCandle", candle);
+            }
         }
         public static async Task SendHeikinAshi(Candle candle)
         {
-            await connection.SendAsync("SendHeikinAshi", candle);
+            if (connection.State == HubConnectionState.Connected)
+            {
+                await connection.SendAsync("SendHeikinAshi", candle);
+            }
         }
         public static async Task SendSignal(Signal signal)
         {
-            await connection.SendAsync("SendSignal", signal);
+            if (connection.State == HubConnectionState.Connected)
+            {
+                await connection.SendAsync("SendSignal", signal);
+            }
         }
     }
 }
