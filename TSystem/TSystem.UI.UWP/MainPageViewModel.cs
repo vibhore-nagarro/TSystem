@@ -54,7 +54,8 @@ namespace TSystem.UI.UWP
 
         private void OnSignal(Signal signal)
         {
-            Signals.Add(signal);
+            //if (Signals.Count == 0 || Signals.Last().SignalType != signal.SignalType)
+                Signals.Add(signal);
         }
     }
 }

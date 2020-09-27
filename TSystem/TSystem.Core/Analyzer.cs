@@ -75,8 +75,6 @@ namespace TSystem.Core
             {
                 signal = strategy.Apply(analysisModel);
                 //signal = ApplyFilter1(signal);
-                signal.Price = analysisModel.Candles.Last().Close;
-                signal.TimeStamp = analysisModel.Candles.Last().TimeStamp;
             }
             return signal;
         }

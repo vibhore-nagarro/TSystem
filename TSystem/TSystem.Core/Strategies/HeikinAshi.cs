@@ -17,8 +17,11 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
             if (model.HeikinAshi.Count < 5) return signal;
-            if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.First();
-            if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.First();
+            if (0.02m > model.HeikinAshi.Last().Body) return signal;
+            if (0.02m > model.Candles.Last().Body) return signal;
+
+            if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.Last();
+            if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.Last();
 
             var newSignal = LongEntry(model);
             if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
@@ -32,7 +35,7 @@ namespace TSystem.Core.Strategies
             UpdateLeadingHeikinAshi(model);
             UpdateLeadingCandle(model);
 
-            signal.Price = model.LTP;
+            signal.Price = model.Candles.Last().Close;
             signal.TimeStamp = model.Candles.Last().TimeStamp;
             return signal;
         }
@@ -49,7 +52,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
-            if (currentHeikinAshi.TimeStamp.Day == 30 && currentHeikinAshi.TimeStamp.Month == 3)
+            if (currentHeikinAshi.TimeStamp.Day == 23 && currentHeikinAshi.TimeStamp.Month == 4)
             {
 
             }
@@ -58,7 +61,8 @@ namespace TSystem.Core.Strategies
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
             {
                 // Strong reverse trend
-                if (currentHeikinAshi.Close > previousHeikinAshi.Open && currentHeikinAshi.Close > model.LeadingHeikinAshi.Close)
+                if (currentHeikinAshi.Close > previousHeikinAshi.Open 
+                    && currentHeikinAshi.Close > (model.LeadingHeikinAshi.IsGreen ? model.LeadingHeikinAshi.Close : model.LeadingHeikinAshi.Open))
                 {
                     signal.SignalType = SignalType.Entry;
                     signal.TradeType = TradeType.Long;
@@ -124,7 +128,8 @@ namespace TSystem.Core.Strategies
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
             {
-                if (currentHeikinAshi.Close < previousHeikinAshi.Open && currentHeikinAshi.Close < model.LeadingHeikinAshi.Open)
+                if (currentHeikinAshi.Close < previousHeikinAshi.Open 
+                    && currentHeikinAshi.Close < (model.LeadingHeikinAshi.IsGreen ? model.LeadingHeikinAshi.Open : model.LeadingHeikinAshi.Close))
                 {
                     signal.SignalType = SignalType.Entry;
                     signal.TradeType = TradeType.Short;
@@ -159,7 +164,8 @@ namespace TSystem.Core.Strategies
 
                 if(currentCandle.IsRed)
                 {
-                    if (currentCandle.Close < previousCandle.Open && currentCandle.Close < model.LeadingCandle.Open)
+                    if (currentCandle.Close < previousCandle.Open 
+                        && currentCandle.Close < (model.LeadingHeikinAshi.IsGreen ? model.LeadingHeikinAshi.Open : model.LeadingHeikinAshi.Close))
                     {
                         signal.SignalType = SignalType.Entry;
                         signal.TradeType = TradeType.Short;
@@ -192,7 +198,8 @@ namespace TSystem.Core.Strategies
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
             {
-                if (currentHeikinAshi.Close < previousHeikinAshi.Open || currentHeikinAshi.Close < model.LeadingHeikinAshi.Open)
+                if (currentHeikinAshi.Close < previousHeikinAshi.Open 
+                    || currentHeikinAshi.Close < (model.LeadingHeikinAshi.IsGreen ? model.LeadingHeikinAshi.Close : model.LeadingHeikinAshi.Open))
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Short;
@@ -239,7 +246,8 @@ namespace TSystem.Core.Strategies
 
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
             {
-                if (currentHeikinAshi.Close > previousHeikinAshi.Open || currentHeikinAshi.Close > model.LeadingHeikinAshi.Open)
+                if (currentHeikinAshi.Close > previousHeikinAshi.Open 
+                    || currentHeikinAshi.Close > (model.LeadingHeikinAshi.IsGreen ? model.LeadingHeikinAshi.Close : model.LeadingHeikinAshi.Open))
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Short;
@@ -275,9 +283,13 @@ namespace TSystem.Core.Strategies
             }
             else
             {
-                if (currentCandle.IsGreen && currentCandle.Close >= model.LeadingHeikinAshi.Close)
+                if (currentCandle.IsGreen && model.LeadingHeikinAshi.IsRed && currentCandle.Close >= model.LeadingHeikinAshi.Open)
                     model.LeadingHeikinAshi = currentCandle;
-                if (currentCandle.IsRed && currentCandle.Close <= model.LeadingHeikinAshi.Open)
+                else if (currentCandle.IsGreen && model.LeadingHeikinAshi.IsGreen && currentCandle.Close >= model.LeadingHeikinAshi.Close)
+                    model.LeadingHeikinAshi = currentCandle;
+                else if (currentCandle.IsRed && model.LeadingHeikinAshi.IsGreen && currentCandle.Close <= model.LeadingHeikinAshi.Open)
+                    model.LeadingHeikinAshi = currentCandle;
+                else if (currentCandle.IsRed && model.LeadingHeikinAshi.IsRed && currentCandle.Close <= model.LeadingHeikinAshi.Close)
                     model.LeadingHeikinAshi = currentCandle;
             }
         }
@@ -294,9 +306,13 @@ namespace TSystem.Core.Strategies
             }
             else
             {
-                if (currentCandle.IsGreen && currentCandle.Close >= model.LeadingCandle.Close)
+                if (currentCandle.IsGreen && model.LeadingCandle.IsRed && currentCandle.Close >= model.LeadingCandle.Open)
                     model.LeadingCandle = currentCandle;
-                if (currentCandle.IsRed && currentCandle.Close <= model.LeadingCandle.Open)
+                else if (currentCandle.IsGreen && model.LeadingCandle.IsGreen && currentCandle.Close >= model.LeadingCandle.Close)
+                    model.LeadingCandle = currentCandle;
+                else if (currentCandle.IsRed && model.LeadingCandle.IsGreen && currentCandle.Close <= model.LeadingCandle.Open)
+                    model.LeadingCandle = currentCandle;
+                else if (currentCandle.IsRed && model.LeadingCandle.IsRed && currentCandle.Close <= model.LeadingCandle.Close)
                     model.LeadingCandle = currentCandle;
             }
         }

@@ -36,10 +36,10 @@
                                     <Border BorderBrush="Black" BorderThickness="1" Background="White" Width="30" Height="30" >
                                         <Rectangle Width="25" Height="25" Margin="1" Stroke="Black" x:Name="Rectangle">
                                             <Interactivity:Interaction.Behaviors>
-                                                <Core:DataTriggerBehavior Binding="{Binding IsGreen}" Value="False">
+                                                <Core:DataTriggerBehavior Binding="{Binding IsGreen}" Value="True">
                                                     <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Green" />
                                                 </Core:DataTriggerBehavior>
-                                                <Core:DataTriggerBehavior Binding="{Binding IsRed}" Value="False">
+                                                <Core:DataTriggerBehavior Binding="{Binding IsRed}" Value="True">
                                                     <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Red" />
                                                 </Core:DataTriggerBehavior>
                                             </Interactivity:Interaction.Behaviors>
@@ -68,10 +68,10 @@
                                     <Border BorderBrush="Black" BorderThickness="1" Background="White" Width="30" Height="30" >
                                         <Rectangle Width="25" Height="25" Margin="1" Stroke="Black" x:Name="Rectangle">
                                             <Interactivity:Interaction.Behaviors>
-                                                <Core:DataTriggerBehavior Binding="{Binding IsGreen}" Value="False">
+                                                <Core:DataTriggerBehavior Binding="{Binding IsGreen}" Value="True">
                                                     <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Green" />
                                                 </Core:DataTriggerBehavior>
-                                                <Core:DataTriggerBehavior Binding="{Binding IsRed}" Value="False">
+                                                <Core:DataTriggerBehavior Binding="{Binding IsRed}" Value="True">
                                                     <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Red" />
                                                 </Core:DataTriggerBehavior>
                                             </Interactivity:Interaction.Behaviors>
