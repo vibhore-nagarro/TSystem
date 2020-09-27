@@ -133,6 +133,12 @@ namespace TSystem.Entities
             return Open < candle.Open && Close > candle.Close;
         }
 
+        public bool IsCrossingLeadingCandle(Candle leadingCandle)
+        {
+            return this.IsGreen ? this.Close > (leadingCandle.IsGreen ? leadingCandle.Close : leadingCandle.Open) :
+                this.Close < (leadingCandle.IsGreen ? leadingCandle.Open : leadingCandle.Close);
+        }
+
         public override string ToString()
         {
             string color = "None";
