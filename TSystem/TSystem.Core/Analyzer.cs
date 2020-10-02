@@ -70,12 +70,19 @@ namespace TSystem.Core
 
         public Signal Analyze()
         {
+            if (analysisModel.Candles.Last().TimeStamp.Day == 1 && analysisModel.Candles.Last().TimeStamp.Month == 10)
+            {
+
+            }
             Signal signal = new Signal() { Price = 0, SignalType = SignalType.None };
             foreach (IStrategy strategy in strategies)
             {
                 signal = strategy.Apply(analysisModel);
                 //signal = ApplyFilter1(signal);
             }
+            
+            decimal pl = ComputePerformanceModel(signal);
+            //this.PerformanceModelK
             return signal;
         }
 
@@ -112,6 +119,7 @@ namespace TSystem.Core
         private void InitializeStrategies()
         {
             strategies.Add(new HeikinAshi());
+            //strategies.Add(new PreviousDayHighLowBreakout());            
         }
 
         private void BuildCandle(DateTime signalTime)
@@ -201,10 +209,11 @@ namespace TSystem.Core
             BuildHekinAshiCandle();
 
             var signal = Analyze();
+
             
             if (signal.SignalType != SignalType.None)
             {
-                OnSignalRecieved(signal);
+                OnSignalRecieved(signal);                               
                 Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price}");
             }
         }
@@ -225,7 +234,6 @@ namespace TSystem.Core
                 }
                 if (pl == 0)
                 {
-                    this.PerformanceModel.LastTradePL = pl;
                     return pl;
                 }
 

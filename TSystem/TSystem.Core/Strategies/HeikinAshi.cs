@@ -56,6 +56,10 @@ namespace TSystem.Core.Strategies
             {
 
             }
+            if (currentHeikinAshi.TimeStamp.Hour == 10 && currentHeikinAshi.TimeStamp.Minute == 5)
+            {
+
+            }
 
             // Trend Reversal
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)

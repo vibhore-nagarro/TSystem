@@ -143,7 +143,7 @@ namespace TSystem.Entities
         {
             string color = "None";
             color = IsRed ? "Red" : "Green";
-            return $"O={Open}, H={High}, L={Low}, C={Close}, {color}";
+            return $"T={TimeStamp.ToShortDateString()}, O={Open}, H={High}, L={Low}, C={Close}, {color}";
         }
 
         #endregion
