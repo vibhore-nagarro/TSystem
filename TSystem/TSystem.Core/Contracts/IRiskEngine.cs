@@ -5,7 +5,7 @@ using TSystem.Core.Models;
 
 namespace TSystem.Core.Contracts
 {
-    public interface IRiskManager
+    public interface IRiskEngine
     {
         void Run(AnalysisModel model);
     }

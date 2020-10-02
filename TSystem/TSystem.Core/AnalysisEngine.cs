@@ -14,7 +14,7 @@ using TSystem.Entities.Enums;
 
 namespace TSystem.Core
 {
-    public class AnalysisManager
+    public class AnalysisEngine
     {
         #region Data Members
 
@@ -39,13 +39,13 @@ namespace TSystem.Core
             SignalRecieved?.Invoke(this, new SignalRecievedEventArgs(signal));
         }
 
-        IMarketDataManager marketData;
+        IMarketDataEngine marketData;
 
         #endregion
 
-        public AnalysisManager()
+        public AnalysisEngine()
         {
-            marketData = new HistoricalMarketDataManager();
+            marketData = new HistoricalMarketDataEngine();
         }        
 
         #region Methods

@@ -22,7 +22,7 @@ namespace TSystem.Core
     }
 
     public delegate void CandleReceivedEventHandler(object sender, CandleReceivedArgs e);
-    public interface IMarketDataManager
+    public interface IMarketDataEngine
     {        
         public event CandleReceivedEventHandler CandleReceived;
 

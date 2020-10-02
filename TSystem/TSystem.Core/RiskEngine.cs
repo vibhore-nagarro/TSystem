@@ -6,12 +6,12 @@ using TSystem.Core.Models;
 
 namespace TSystem.Core
 {
-    public class RiskManager : IRiskManager
+    public class RiskEngine : IRiskEngine
     {
-        private RiskManager()
+        private RiskEngine()
         {
         }
-        public static IRiskManager Instance { get; } = new RiskManager();
+        public static IRiskEngine Instance { get; } = new RiskEngine();
         private IList<IRule> Rules { get; set; } = new List<IRule>();
         public void Run(AnalysisModel model)
         {

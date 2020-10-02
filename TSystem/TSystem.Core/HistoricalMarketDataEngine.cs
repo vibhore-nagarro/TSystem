@@ -9,7 +9,7 @@ using TSystem.Entities;
 
 namespace TSystem.Core
 {
-    public class HistoricalMarketDataManager : IMarketDataManager
+    public class HistoricalMarketDataEngine : IMarketDataEngine
     {
         public const string Token = "enctoken Zl392X9DgswS1AuX/noyXQuh37cHYiSBK1MZz8b2uYprb3RuA0YQELWz6qsYrr8HIzIVMXmahgpQizoh2BTxxMR/jnlRqQ==";
         public event CandleReceivedEventHandler CandleReceived;

@@ -38,7 +38,7 @@ namespace TSystem.Core
         private AnalysisModel analysisModel = new AnalysisModel();
         private PerformanceModel performanceModel = new PerformanceModel();
         private List<IStrategy> strategies = new List<IStrategy>();
-        private ITradeManager tradeManager = new TradeManager();
+        private ITradeEngine tradeManager = new TradeEngine();
 
         #endregion
 
@@ -70,7 +70,7 @@ namespace TSystem.Core
 
         public Signal Analyze()
         {
-            if (analysisModel.Candles.Last().TimeStamp.Day == 1 && analysisModel.Candles.Last().TimeStamp.Month == 10)
+            if (analysisModel.Candles.Last().TimeStamp.Day == 27 && analysisModel.Candles.Last().TimeStamp.Month == 4)
             {
 
             }

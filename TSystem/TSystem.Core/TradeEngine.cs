@@ -8,9 +8,9 @@ using TSystem.Entities.Enums;
 
 namespace TSystem.Core
 {
-    public class TradeManager : ITradeManager
+    public class TradeEngine : ITradeEngine
     {
-        IRiskManager riskManager = RiskManager.Instance;        
+        IRiskEngine riskManager = RiskEngine.Instance;        
 
         public void PlaceMarketOrder(TradeType tradeType, ProductType productType, int quantity)
         {

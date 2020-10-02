@@ -18,7 +18,7 @@ namespace TSystem.Core
         {
             OrderBook.ExecuteOrders(model.Candles.Last());
             Portfolio.Instance.Positions.ForEach(p => p.LTP = model.LTP);
-            RiskManager.Instance.Run(model);
+            RiskEngine.Instance.Run(model);
         }
     }
 }

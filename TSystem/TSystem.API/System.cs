@@ -11,11 +11,11 @@ namespace TSystem.API
 {
     public class System
     {
-        public static AnalysisManager analysisManager;
+        public static AnalysisEngine analysisManager;
         static HubConnection connection;
         public async static void Start()
         {
-            analysisManager = new AnalysisManager();
+            analysisManager = new AnalysisEngine();
             analysisManager.CandleRecieved += AnalysisManager_CandleRecieved;
             analysisManager.SignalRecieved += AnalysisManager_SignalRecieved;
             analysisManager.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;

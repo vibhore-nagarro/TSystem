@@ -10,7 +10,7 @@ using TSystem.Entities;
 namespace TSystem.Core
 {
     
-    public class LiveMarketDataManager : IMarketDataManager
+    public class LiveMarketDataEngine : IMarketDataEngine
     {
         public const string Token = "enctoken UNt/QY6GDQGNiCrUgw1l9H2kxA6lZ6CQSpVIbKOmLAbtd5ifAEXRnMag0lr2Lf+5MaBRWO/0pnCM2C7Crkq7+E4mBHsRig==";
         public event CandleReceivedEventHandler CandleReceived;

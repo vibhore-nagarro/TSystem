@@ -6,7 +6,7 @@ using TSystem.Entities.Enums;
 
 namespace TSystem.Core.Contracts
 {
-    public interface ITradeManager
+    public interface ITradeEngine
     {
         void PlaceMarketOrder(TradeType tradeType, ProductType productType, int quantity);
         void PlaceLimitOrder(TradeType tradeType, ProductType productType, int quantity, decimal limitPrice);
