@@ -70,7 +70,7 @@ namespace TSystem.Core
 
         public Signal Analyze()
         {
-            if (analysisModel.Candles.Last().TimeStamp.Day == 27 && analysisModel.Candles.Last().TimeStamp.Month == 4)
+            if (analysisModel.Candles.Last().TimeStamp.Day == 30 && analysisModel.Candles.Last().TimeStamp.Month == 09)
             {
 
             }
@@ -79,6 +79,7 @@ namespace TSystem.Core
             {
                 signal = strategy.Apply(analysisModel);
                 //signal = ApplyFilter1(signal);
+                signal.Instrument = instrument;
             }
             
             decimal pl = ComputePerformanceModel(signal);

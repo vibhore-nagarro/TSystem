@@ -11,14 +11,14 @@ namespace TSystem.API
 {
     public class System
     {
-        public static AnalysisEngine analysisManager;
+        public static AnalysisEngine analysisEngine;
         static HubConnection connection;
         public async static void Start()
         {
-            analysisManager = new AnalysisEngine();
-            analysisManager.CandleRecieved += AnalysisManager_CandleRecieved;
-            analysisManager.SignalRecieved += AnalysisManager_SignalRecieved;
-            analysisManager.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;
+            analysisEngine = new AnalysisEngine();
+            analysisEngine.CandleRecieved += AnalysisManager_CandleRecieved;
+            analysisEngine.SignalRecieved += AnalysisManager_SignalRecieved;
+            analysisEngine.HeikinAshiRecieved += AnalysisManager_HeikinAshiRecieved;
 
             connection = new HubConnectionBuilder()
                                  .WithUrl("https://localhost:44340/analysis", HttpTransportType.WebSockets | HttpTransportType.LongPolling)
@@ -26,7 +26,7 @@ namespace TSystem.API
 
             await connection.StartAsync();
 
-            analysisManager.Start();
+            analysisEngine.Start();
         }
 
         private static async void AnalysisManager_SignalRecieved(object sender, Core.Events.SignalRecievedEventArgs e)

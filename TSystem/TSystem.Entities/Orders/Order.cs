@@ -13,7 +13,8 @@ namespace TSystem.Entities
         public ProductType ProductType { get; set; }
         public TradeType TradeType { get; set; }
         public bool IsExecuted { get; set; }
-
+        public decimal? Stoploss { get; set; }
+        public decimal? Target { get; set; }
         public virtual Order Execute(decimal price)
         {
             Portfolio.Instance.AddOrUpdatePosition(price, Quantity = this.Quantity, TradeType = this.TradeType);

@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using TSystem.Core.Contracts;
 using TSystem.Core.Events;
 using TSystem.Entities;
 using TSystem.Entities.Enums;
@@ -37,23 +38,28 @@ namespace TSystem.Core
         private void OnSignalCreated(Signal signal)
         {
             SignalRecieved?.Invoke(this, new SignalRecievedEventArgs(signal));
+            ProcessSignal(signal);
         }
 
-        IMarketDataEngine marketData;
+        IMarketDataEngine marketDataEngine;
+        ITradeEngine tradeEngine;
+        IRiskEngine riskEngine;
 
         #endregion
 
         public AnalysisEngine()
         {
-            marketData = new HistoricalMarketDataEngine();
+            marketDataEngine = new HistoricalMarketDataEngine();
+            tradeEngine = new TradeEngine();
+            riskEngine = RiskEngine.Instance;
         }        
 
         #region Methods
 
         public void Start()
         {
-            marketData.CandleReceived += MarketData_CandleReceived;
-            marketData.Start();
+            marketDataEngine.CandleReceived += MarketData_CandleReceived;
+            marketDataEngine.Start();
         }
 
         private void MarketData_CandleReceived(object sender, CandleReceivedArgs e)
@@ -76,10 +82,13 @@ namespace TSystem.Core
         {
             Analyzer analyzer = GetAnalyzer(candle);
 
+            analyzer.Model.LTP = candle.Close;
             analyzer.Model.Candles.Add(candle);
             analyzer.BuildHekinAshiCandle();
             OnCandleCreated(candle);
             OnHeikinAshiRecieved(analyzer.Model.HeikinAshi.Last());
+
+            System.RunAll(analyzer.Model);
 
             var signal = analyzer.Analyze();
 
@@ -110,6 +119,12 @@ namespace TSystem.Core
         {
             
         }      
+
+        private void ProcessSignal(Signal signal)
+        {
+            Analyzer analyzer = analyzers[signal.Instrument];
+            tradeEngine.ProcessSignal(signal, analyzer);
+        }
 
         #endregion
     }

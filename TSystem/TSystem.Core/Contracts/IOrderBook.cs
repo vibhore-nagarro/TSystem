@@ -7,6 +7,7 @@ namespace TSystem.Core.Contracts
 {
     public interface IOrderBook
     {
+        List<Order> Orders { get; set; }
         void AddOrder(Order order);
         void RemoveOrder(Order order);
 

@@ -29,7 +29,7 @@ namespace TSystem.Core
                     LimitOrder exitsingLimitOrder = exitsingOrder as LimitOrder;
                     exitsingLimitOrder.LimitPrice = limitOrder.LimitPrice;
                 }
-                if (exitsingOrder is StoplossLimitOrder || order is StoplossLimitOrder)
+                else if (exitsingOrder is StoplossLimitOrder || order is StoplossLimitOrder)
                 {
                     StoplossLimitOrder limitOrder = order as StoplossLimitOrder;
                     StoplossLimitOrder exitsingLimitOrder = exitsingOrder as StoplossLimitOrder;
