@@ -92,22 +92,20 @@ namespace TSystem.Core.Models
             return Candles.Select(candle => (candle.Open + candle.High + candle.Low + candle.Close) / 4).ToList();
         }
 
-        public decimal AverageCandleBody()
-        {
-            return Candles.Average(c => c.Body);
-        }
+        public decimal AverageCandleBody => Candles.Average(c => c.Body);
+        
 
-        public decimal AverageCandleLength()
-        {
-            return Candles.Average(c => c.Length);
-        }
+        public decimal AverageCandleLength => Candles.Average(c => c.Length);
+        public decimal AverageHeikinAshiBody => HeikinAshi.Average(c => c.Body);
 
-        public ulong AverageVolume()
-        {
-            return (ulong)Candles.Average(x => (decimal)x.Volume);
-        }
 
-        public ulong AverageVolume(int period)
+        public decimal AverageHeikinAshiLength => HeikinAshi.Average(c => c.Length);
+
+
+        public ulong AverageVolume => (ulong)Candles.Average(x => (decimal)x.Volume);
+        
+
+        public ulong AverageVolumeForPeriod(int period)
         {
             return (ulong)Candles.Skip(Candles.Count - period).Take(period).Average(x => (decimal)x.Volume);
         }

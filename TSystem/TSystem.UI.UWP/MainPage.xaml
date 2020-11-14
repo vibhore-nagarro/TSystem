@@ -13,7 +13,7 @@
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
     <Page.Resources>
         <ResourceDictionary>
-            <Converters:DateTimeFormatConverter x:Key="ShortDateConverter" ConvertTo="Date"/>
+            <Converters:DateTimeFormatConverter x:Key="ShortDateConverter" ConvertTo="Time"/>
             <Converters:NumberRoundConverter x:Key="NumberRoundConverter" DecimalPlaces="2"/>
         </ResourceDictionary>
     </Page.Resources>
@@ -29,7 +29,7 @@
                         <controls:DataGridTextColumn Header="Close" Binding="{Binding Close, Converter={StaticResource NumberRoundConverter}}"/>
                         <controls:DataGridTextColumn Header="Body" Binding="{Binding Body, Converter={StaticResource NumberRoundConverter}}"/>
                         <controls:DataGridTextColumn Header="Length" Binding="{Binding Length, Converter={StaticResource NumberRoundConverter}}"/>
-                        <controls:DataGridTextColumn Header="Volume" Binding="{Binding Volume}"/>
+                        <controls:DataGridTextColumn Header="Volume" Binding="{Binding CandleVolume}"/>
                         <controls:DataGridTemplateColumn Header="Trend">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -61,7 +61,7 @@
                         <controls:DataGridTextColumn Header="Close" Binding="{Binding Close, Converter={StaticResource NumberRoundConverter}}"/>
                         <controls:DataGridTextColumn Header="Body" Binding="{Binding Body, Converter={StaticResource NumberRoundConverter}}"/>
                         <controls:DataGridTextColumn Header="Length" Binding="{Binding Length, Converter={StaticResource NumberRoundConverter}}"/>
-                        <controls:DataGridTextColumn Header="Volume" Binding="{Binding Volume}"/>
+                        <controls:DataGridTextColumn Header="Volume" Binding="{Binding CandleVolume}"/>
                         <controls:DataGridTemplateColumn Header="Trend">
                             <controls:DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>

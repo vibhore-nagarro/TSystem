@@ -33,7 +33,7 @@ namespace TSystem.Entities
 
         public override string ToString()
         {
-            return $"Type= {TradeType} {SignalType}, Price= {Price}, Strength= {Strength}";
+            return $"T={TimeStamp.ToShortTimeString()}, Type= {TradeType} {SignalType}, Price= {Price}, Strength= {Strength}";
         }
     }
 }

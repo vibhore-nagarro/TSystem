@@ -70,10 +70,6 @@ namespace TSystem.Core
 
         public Signal Analyze()
         {
-            if (analysisModel.Candles.Last().TimeStamp.Day == 30 && analysisModel.Candles.Last().TimeStamp.Month == 09)
-            {
-
-            }
             Signal signal = new Signal() { Price = 0, SignalType = SignalType.None };
             foreach (IStrategy strategy in strategies)
             {
@@ -81,9 +77,10 @@ namespace TSystem.Core
                 //signal = ApplyFilter1(signal);
                 signal.Instrument = instrument;
             }
-            
-            decimal pl = ComputePerformanceModel(signal);
-            //this.PerformanceModelK
+            if (signal.SignalType != SignalType.None)
+            {
+                decimal pl = ComputePerformanceModel(signal);
+            }
             return signal;
         }
 
@@ -98,8 +95,8 @@ namespace TSystem.Core
                 return signal;
             var rsi = analysisModel.RSI();
             var avgPrice = analysisModel.AveragePrice().Average();
-            var avgCandleBody = analysisModel.AverageCandleBody();
-            var avgVol = analysisModel.AverageVolume();
+            var avgCandleBody = analysisModel.AverageCandleBody;
+            var avgVol = analysisModel.AverageVolume;
 
             var currentCandle = analysisModel.Candles.Last();
             var previousCandle = analysisModel.Candles.ElementAt(analysisModel.Candles.Count - 2);
@@ -159,12 +156,7 @@ namespace TSystem.Core
                 heikinAshi.High = Math.Max(Math.Max(heikinAshi.Open, heikinAshi.Close), candle.High);
                 heikinAshi.Low = Math.Min(Math.Min(heikinAshi.Open, heikinAshi.Close), candle.Low);
             }
-            ulong netVolume = candle.Volume;
-            if (analysisModel.HeikinAshi.Count > 2)
-            {
-                netVolume = candle.Volume - analysisModel.HeikinAshi.ElementAt(analysisModel.HeikinAshi.Count - 2).Volume;
-            }
-            heikinAshi.CandleVolume = netVolume;
+            heikinAshi.CandleVolume = candle.CandleVolume;
             heikinAshi.Volume = candle.Volume;
             heikinAshi.TimeStamp = candle.TimeStamp;
 

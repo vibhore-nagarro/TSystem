@@ -50,6 +50,7 @@ namespace TSystem.Core
         public AnalysisEngine()
         {
             marketDataEngine = new HistoricalMarketDataEngine();
+            //marketDataEngine = new LiveMarketDataEngine();
             tradeEngine = new TradeEngine();
             riskEngine = RiskEngine.Instance;
         }        
@@ -69,6 +70,9 @@ namespace TSystem.Core
                 case CandleType.Day:
                     ProcessDayCandle(e.Candle);
                     break;
+                case CandleType.Minute:
+                    ProcessMinuteCandle(e.Candle);
+                    break;
             }
         }
 
@@ -77,7 +81,12 @@ namespace TSystem.Core
             ProcessCandle(candle);
         }
 
-        
+        private void ProcessMinuteCandle(Candle candle)
+        {
+            ProcessCandle(candle);
+        }
+
+
         public void ProcessCandle(Candle candle)
         {
             Analyzer analyzer = GetAnalyzer(candle);
@@ -123,7 +132,7 @@ namespace TSystem.Core
         private void ProcessSignal(Signal signal)
         {
             Analyzer analyzer = analyzers[signal.Instrument];
-            tradeEngine.ProcessSignal(signal, analyzer);
+            //tradeEngine.ProcessSignal(signal, analyzer);
         }
 
         #endregion
