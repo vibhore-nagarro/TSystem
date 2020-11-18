@@ -12,7 +12,7 @@ namespace TSystem.Core
 {
     public class HistoricalMarketDataEngine : IMarketDataEngine
     {
-        public const string Token = "enctoken sa/bV6/h9P7rwWQfcwNNraf0and9ptpBe/Q/9P84tFudBG/CCZtRTeFhvSCwJajpann/Qr1JHc72mgiIhE0blpKjxNSEQw==";
+        public const string Token = "enctoken Ci0u8NXva9Hqm8M5oulmQwyDyMvuzvGQ8wGU7fd1CPftc2Il4Q45BGyCcVoVUgvNqHksbhJNHE2/CI1V7gXeKILl94e59Q==";
         public event CandleReceivedEventHandler CandleReceived;
 
         private void OnCandleReceived(Candle candle, CandleType type)
@@ -30,7 +30,9 @@ namespace TSystem.Core
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
 
-            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/12084738/5minute?user_id=ZW2177&oi=1&from=2020-11-13&to=2020-11-13&ciqrandom=1605271700157", Method.GET, DataFormat.Json);
+            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/12084738/5minute?user_id=ZW2177&oi=1&from=2020-11-18&to=2020-11-18&ciqrandom=1605271700157", Method.GET, DataFormat.Json);
+            //RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/12084482/5minute?user_id=ZW2177&oi=1&from=2020-11-18&to=2020-11-18&ciqrandom=1605596490009", Method.GET, DataFormat.Json);
+        
             request.AddHeader("authorization", Token);
 
             dynamic result = JsonConvert.DeserializeObject(client.Execute(request).Content);

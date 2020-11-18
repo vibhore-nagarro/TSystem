@@ -92,7 +92,7 @@ namespace TSystem.Core.Models
             return Candles.Select(candle => (candle.Open + candle.High + candle.Low + candle.Close) / 4).ToList();
         }
 
-        public decimal AverageCandleBody => Candles.Average(c => c.Body);
+        public decimal AverageCandleBody => Candles.Average(c => c.Body) / 2;
         
 
         public decimal AverageCandleLength => Candles.Average(c => c.Length);

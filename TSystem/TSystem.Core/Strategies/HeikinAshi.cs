@@ -32,7 +32,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
-            if(currentCandle.TimeStamp.Hour == 13 && currentCandle.TimeStamp.Minute == 50)
+            if(currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 30)
             {
 
             }
@@ -73,7 +73,7 @@ namespace TSystem.Core.Strategies
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
             {
                 // Strong reverse trend
-                if (currentHeikinAshi.Close > previousHeikinAshi.Open && currentHeikinAshi.Body > model.AverageHeikinAshiBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
+                if (currentHeikinAshi.Close > previousHeikinAshi.Open && currentCandle.Body > model.AverageCandleBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
                     signal.SignalType = SignalType.Entry;
                     signal.TradeType = TradeType.Long;
@@ -138,7 +138,7 @@ namespace TSystem.Core.Strategies
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
             {
-                if (currentHeikinAshi.Close < previousHeikinAshi.Open && currentHeikinAshi.Body > model.AverageHeikinAshiBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
+                if (currentHeikinAshi.Close < previousHeikinAshi.Open && currentCandle.Body > model.AverageCandleBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
                     signal.SignalType = SignalType.Entry;
                     signal.TradeType = TradeType.Short;
@@ -170,6 +170,16 @@ namespace TSystem.Core.Strategies
 
                     signal.Price = currentHeikinAshi.Close;
                 }                                
+            }
+            if (currentHeikinAshi.IsRed && previousHeikinAshi.IsRed)
+            {
+                if (currentHeikinAshi.Close < previousHeikinAshi.Close && currentCandle.Body > model.AverageCandleBody)
+                {
+                    signal.SignalType = SignalType.Entry;
+                    signal.TradeType = TradeType.Short;
+                    signal.Strength = 50;
+                    signal.Price = currentHeikinAshi.Close;
+                }
             }
             if (currentCandle.IsRed)
             {

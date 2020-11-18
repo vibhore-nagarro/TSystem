@@ -1,6 +1,7 @@
 ﻿using KiteConnect;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace TSystem.Core
@@ -59,11 +60,14 @@ namespace TSystem.Core
             SubscribeToInstruments();
         }
         UInt32[] tokens = null;
+        decimal p1, p2;
         private void SubscribeToInstruments()
         {
             //tokens = new UInt32[] { 12084738 }; // - Nifty
             //tokens = new UInt32[] { 57477639 }; // - Gold
-            tokens = new UInt32[] { 780803 }; // - USDINR
+            //tokens = new UInt32[] { 780803 }; // - USDINR
+            tokens = new UInt32[] { 12084482 }; // - Bank Nifty
+            
             ticker.Subscribe(tokens);
             ticker.SetMode(tokens, Mode: Constants.MODE_FULL);
         }
@@ -94,7 +98,6 @@ namespace TSystem.Core
         
         private void OnTick(Tick tickData)
         {
-            Console.WriteLine(tickData.LastPrice);
         }
 
         private void OnOrderUpdate(Order OrderData)
