@@ -54,18 +54,7 @@ namespace TSystem.UI.UWP
 
         private void OnSignal(Signal signal)
         {
-            if (Signals.Count > 0)
-            {
-                if ((Signals.Last().IsLongEntry() && (signal.IsLongExit() || signal.IsShortEntry()))
-                    || (Signals.Last().IsLongExit() && (signal.IsLongEntry() || signal.IsShortEntry()))
-                    || (Signals.Last().IsShortEntry() && (signal.IsShortExit() || signal.IsLongEntry()))
-                    || (Signals.Last().IsShortExit() && (signal.IsShortEntry() || signal.IsLongEntry())))
-                    Signals.Add(signal);
-            }
-            else
-            {
-                Signals.Add(signal);
-            }
+            Signals.Add(signal);
         }
     }
 }

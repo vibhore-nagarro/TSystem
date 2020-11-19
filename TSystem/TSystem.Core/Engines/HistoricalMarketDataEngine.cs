@@ -12,7 +12,7 @@ namespace TSystem.Core
 {
     public class HistoricalMarketDataEngine : IMarketDataEngine
     {
-        public const string Token = "enctoken jJKVt5PW5iLItx3RkWXxmzae9qk9JCZM829FoZUOFeU9wKD8v/eN1mQB743yAB5UEOO9gTNqpCocBEC9jUBNQDLAqgiKqQ==";
+        public const string Token = "enctoken OtiDmCi9Go4YU0TGobBunwSBMcuaqJ4gQQ/Te0xWTTEzpZkFPQSfrmJpToDcg/Liud/2oxgk8UE/RVf1S7kcGeVf3dv+fA==";
         public event CandleReceivedEventHandler CandleReceived;
 
         private void OnCandleReceived(Candle candle, CandleType type)

@@ -103,8 +103,26 @@ namespace TSystem.Core
 
             if (signal.SignalType != SignalType.None)
             {
-                analyzer.Model.Signals.Add(signal);
-                OnSignalCreated(signal);
+                var signals = analyzer.Model.Signals;
+                if (signals.Count > 0)
+                {
+                    if ((signals.Last().IsLongEntry() && (signal.IsLongExit() || signal.IsShortEntry()))
+                        || (signals.Last().IsLongExit() && (signal.IsLongEntry() || signal.IsShortEntry()))
+                        || (signals.Last().IsShortEntry() && (signal.IsShortExit() || signal.IsLongEntry()))
+                        || (signals.Last().IsShortExit() && (signal.IsShortEntry() || signal.IsLongEntry())))
+                    {
+                        signals.Add(signal);
+                        OnSignalCreated(signal);
+                    }
+                }
+                else
+                {
+                    signals.Add(signal);
+                    OnSignalCreated(signal);
+                }
+
+                //analyzer.Model.Signals.Add(signal);
+                //OnSignalCreated(signal);
             }
         }
 
