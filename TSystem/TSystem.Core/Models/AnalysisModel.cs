@@ -5,6 +5,7 @@ using System.Text;
 using TA = TicTacTec.TA.Library;
 using TSystem.Entities;
 using System.Diagnostics;
+using TSystem.Entities.Enums;
 
 namespace TSystem.Core.Models
 {
@@ -82,7 +83,7 @@ namespace TSystem.Core.Models
         public decimal PeriodPeak { get; set; }
         public decimal PeriodTrough { get; set; }
         public bool IsPositionOpen { get; set; }
-        //public TradeType PositionType { get; set; }
+        
         #endregion
 
         #region Methods
@@ -103,13 +104,43 @@ namespace TSystem.Core.Models
 
 
         public ulong AverageVolume => (ulong)Candles.Average(x => (decimal)x.Volume);
-        
+
+        public decimal AveragePriceMovePerCandle => Candles.Count == 1 ? Candles[0].Body : Candles.Skip(1).Select(c => c.Close - Candles[Candles.IndexOf(c) - 1].Close).Average();
+
 
         public ulong AverageVolumeForPeriod(int period)
         {
             return (ulong)Candles.Skip(Candles.Count - period).Take(period).Average(x => (decimal)x.Volume);
         }
+        public Trend CandleTrend(int candleCount)
+        {
+            if (Candles.Count < candleCount)
+                return Trend.Unknown;
 
+            var candles = Candles.Skip(Candles.Count - candleCount);
+            var upCandlesCount = candles.Count(c => c.IsGreen);
+            var downCandlesCount = candles.Count(c => c.IsRed);
+
+            var firstCandle = candles.First();
+            var lastCandle = candles.Last();
+            
+            if(firstCandle.IsGreen)
+            {
+                if (lastCandle.Close > firstCandle.Close && upCandlesCount > downCandlesCount)
+                    return Trend.Up;
+                if (lastCandle.Close < firstCandle.Open && upCandlesCount < downCandlesCount)
+                    return Trend.Down;
+            }
+            if (firstCandle.IsRed)
+            {
+                if (lastCandle.Close > firstCandle.Open && upCandlesCount > downCandlesCount)
+                    return Trend.Up;
+                if (lastCandle.Close < firstCandle.Close && upCandlesCount < downCandlesCount)
+                    return Trend.Down;
+            }
+
+            return Trend.Sideways;
+        }
         public List<decimal> SMA(int period)
         {
             int startIndex, count;

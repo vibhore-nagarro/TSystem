@@ -75,12 +75,15 @@ namespace TSystem.Core
             {
                 signal = strategy.Apply(analysisModel);
                 //signal = ApplyFilter1(signal);
+                //signal = ApplyFilter2(signal);
+
                 signal.Instrument = instrument;
             }
             if (signal.SignalType != SignalType.None)
             {
                 decimal pl = ComputePerformanceModel(signal);
             }
+            
             return signal;
         }
 
@@ -109,6 +112,34 @@ namespace TSystem.Core
                 // Reset signal if it opened with gap up/down
                 if ((currentCandle.Open - previousCandle.Open) > avgCandleBody)
                     signal = new Signal() { Price = 0, SignalType = SignalType.None };
+            }
+
+            return signal;
+        }
+
+        /// <summary>
+        /// Filter signals by avergae candle body/gap (up/down) opening
+        /// </summary>
+        /// <param name="signal"></param>
+        /// <returns></returns>
+        private Signal ApplyFilter2(Signal signal)
+        {
+            if (analysisModel.Candles.Count < 5)
+                return signal;
+
+            if (signal.IsLongEntry())
+            {
+                if(Model.CandleTrend(3) == Trend.Up)
+                {
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+                }
+            }
+            if (signal.IsShortEntry())
+            {
+                if (Model.CandleTrend(3) == Trend.Down)
+                {
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+                }
             }
 
             return signal;

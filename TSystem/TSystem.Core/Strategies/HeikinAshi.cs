@@ -16,7 +16,7 @@ namespace TSystem.Core.Strategies
         public Signal Apply(AnalysisModel model)
         {
             Signal signal = new Signal();
-            if (model.HeikinAshi.Count < 5) return signal;
+            if (model.HeikinAshi.Count < 3) return signal;
             if (0.01m > model.HeikinAshi.Last().Body) return signal;
             if (0.01m > model.Candles.Last().Body) return signal;
 
@@ -32,7 +32,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
-            if(currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 30)
+            if(currentCandle.TimeStamp.Hour == 10 && currentCandle.TimeStamp.Minute == 40)
             {
 
             }
@@ -197,13 +197,14 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
+            var currentCandle = model.Candles.Last();
             var currentHeikinAshi = model.HeikinAshi.Last();
             var previousHeikinAshi = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
 
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsGreen)
             {
                 if (currentHeikinAshi.Body < previousHeikinAshi.Body && currentHeikinAshi.Close < previousHeikinAshi.Close
-                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick))
+                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsRed)
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Long;
@@ -233,13 +234,14 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
+            var currentCandle = model.Candles.Last();
             var currentHeikinAshi = model.HeikinAshi.Last();
             var previousHeikinAshi = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsRed)
             {
                 if (currentHeikinAshi.Body < previousHeikinAshi.Body && currentHeikinAshi.Close > previousHeikinAshi.Close
-                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick))
+                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsGreen)
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Short;
