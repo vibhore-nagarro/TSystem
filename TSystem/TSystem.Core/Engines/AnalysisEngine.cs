@@ -58,6 +58,11 @@ namespace TSystem.Core
 
         #region Methods
 
+        public void ChangeEngine(IMarketDataEngine engine)
+        {
+            marketDataEngine = engine;
+        }
+
         public void Start()
         {
             marketDataEngine.CandleReceived += MarketData_CandleReceived;
@@ -94,7 +99,7 @@ namespace TSystem.Core
         }
 
 
-        public void ProcessCandle(Candle candle)
+        private void ProcessCandle(Candle candle)
         {
             Analyzer analyzer = GetAnalyzer(candle);
 

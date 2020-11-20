@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TSystem.Common;
+using TSystem.Common.Enums;
 using TSystem.Core;
 using TSystem.Entities;
 
@@ -12,11 +13,11 @@ namespace TSystem.API
 {
     public class System
     {
-        public static AnalysisEngine analysisEngine;
+        private static AnalysisEngine analysisEngine;
         static HubConnection connection;
-        static string serverURL = "https://tsystem-api.azurewebsites.net/analysis";
-        //static string serverURL = "https://localhost:44340/analysis";
-        
+        //static string serverURL = "https://tsystem-api.azurewebsites.net/analysis";
+        static string serverURL = "https://localhost:44340/analysis";
+
         public async static void Start()
         {
             analysisEngine = new AnalysisEngine();
@@ -31,7 +32,23 @@ namespace TSystem.API
 
             await connection.StartAsync();
             analysisEngine.Start();
-        }        
+        }
+
+        public static void ChangeEngine(MarketEngineMode engineMode)
+        {
+            if (engineMode == MarketEngineMode.Live)
+            {
+                analysisEngine.ChangeEngine(new LiveMarketDataEngine());
+                Logger.Log($"Market mode changed to Live");
+            }
+            else if(engineMode == MarketEngineMode.Historical)
+            {
+                analysisEngine.ChangeEngine(new HistoricalMarketDataEngine());
+                Logger.Log($"Market mode changed to Historical");
+            }
+        }
+
+        #region Event Handlers
 
         private static async void AnalysisManager_SignalRecieved(object sender, Core.Events.SignalRecievedEventArgs e)
         {
@@ -82,5 +99,7 @@ namespace TSystem.API
                 await connection.SendAsync("SendLog", logEntry);
             }
         }
+
+        #endregion
     }
 }

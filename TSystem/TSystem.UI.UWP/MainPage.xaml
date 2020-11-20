@@ -103,6 +103,12 @@
                     </ListBox.ItemTemplate>
                 </ListBox>
             </controls:TabViewItem>
+            <controls:TabViewItem Header="Configuration">
+                <StackPanel Margin="5">
+                    <ComboBox ItemsSource="{Binding MarketEngineModes}" SelectedItem="{Binding SelectedMarketEngineMode, Mode=TwoWay}" Margin="5"/>
+                    <Button Margin="5" Click="OnUpdate">Update</Button>
+                </StackPanel>
+            </controls:TabViewItem>
         </controls:TabView>
     </Grid>
 </Page>

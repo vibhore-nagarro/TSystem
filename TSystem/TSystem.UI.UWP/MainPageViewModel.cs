@@ -10,6 +10,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using TSystem.Entities;
+using TSystem.Entities.Enums;
 using TSystem.UI.Entities;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
@@ -19,8 +20,8 @@ namespace TSystem.UI.UWP
     public class MainPageViewModel : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        string serverURL = "https://tsystem-api.azurewebsites.net/";
-        //string serverURL = "https://localhost:44340/analysis";
+        //string serverURL = "https://tsystem-api.azurewebsites.net/";
+        string serverURL = "https://localhost:44340/";
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -30,7 +31,9 @@ namespace TSystem.UI.UWP
         public ObservableCollection<Candle> Candles { get; set; } = new ObservableCollection<Candle>();
         public ObservableCollection<Candle> HeikinAshi { get; set; } = new ObservableCollection<Candle>();
         public ObservableCollection<LogEntry> Logs { get; set; } = new ObservableCollection<LogEntry>();
-       
+        public MarketEngineMode SelectedMarketEngineMode { get; set; } = MarketEngineMode.Live;
+        public List<MarketEngineMode> MarketEngineModes { get; set; } = new List<MarketEngineMode>() { MarketEngineMode.Historical, MarketEngineMode.Live };
+
         public async void OnLoad()
         {
             await Start();
@@ -47,6 +50,19 @@ namespace TSystem.UI.UWP
             connection.On<LogEntry>("ReceiveLog", OnLog);            
 
             await connection.StartAsync();
+        }
+
+        public async void UpdateConfig()
+        {
+            RestClient client = new RestClient(serverURL);
+            IRestRequest request = new RestRequest(@"api/config/marketmode", Method.POST);
+            request.AddQueryParameter("engineMode", ((int)SelectedMarketEngineMode).ToString());
+
+            var response = await client.ExecuteAsync(request);
+            if(response.IsSuccessful)
+            {
+
+            }
         }
 
         private void OnCandle(Candle candle)

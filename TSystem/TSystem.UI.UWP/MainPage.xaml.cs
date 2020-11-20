@@ -35,5 +35,10 @@ namespace TSystem.UI.UWP
         {
             viewModel.OnLoad();
         }
+
+        private void OnUpdate(object sender, RoutedEventArgs e)
+        {
+            viewModel.UpdateConfig();
+        }
     }
 }
