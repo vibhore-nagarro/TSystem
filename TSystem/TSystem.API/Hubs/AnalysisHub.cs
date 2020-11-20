@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TSystem.Common;
 using TSystem.Entities;
 
 namespace TSystem.API.Hubs
@@ -12,6 +13,7 @@ namespace TSystem.API.Hubs
         Task ReceiveSignal(Signal signal);
         Task ReceiveCandle(Candle candle);
         Task ReceiveHeikinAshi(Candle candle);
+        Task ReceiveLog(LogEntry logEntry);
     }
     public class AnalysisHub :  Hub<IAnalysisOperation>
     {
@@ -28,6 +30,11 @@ namespace TSystem.API.Hubs
         public async Task SendHeikinAshi(Candle candle)
         {
             await Clients.All.ReceiveHeikinAshi(candle);
+        }
+
+        public async Task SendLog(LogEntry logEntry)
+        {
+            await Clients.All.ReceiveLog(logEntry);
         }
     }
 }

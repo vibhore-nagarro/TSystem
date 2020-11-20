@@ -14,7 +14,7 @@
     <Page.Resources>
         <ResourceDictionary>
             <Converters:DateTimeFormatConverter x:Key="ShortDateConverter" ConvertTo="Time"/>
-            <Converters:NumberRoundConverter x:Key="NumberRoundConverter" DecimalPlaces="2"/>
+            <Converters:NumberRoundConverter x:Key="NumberRoundConverter" DecimalPlaces="4"/>
         </ResourceDictionary>
     </Page.Resources>
     <Grid>
@@ -93,6 +93,15 @@
                         <controls:DataGridTextColumn Header="Strength" Binding="{Binding Strength}"/>
                     </controls:DataGrid.Columns>
                 </controls:DataGrid>
+            </controls:TabViewItem>
+            <controls:TabViewItem Header="Logs">
+                <ListBox ItemsSource="{Binding Logs}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Message}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </controls:TabViewItem>
         </controls:TabView>
     </Grid>

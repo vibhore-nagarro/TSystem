@@ -45,12 +45,12 @@ namespace TSystem.Core
                     if ((existingPosition.TradeType == TradeType.Long && (signal.IsLongExit() || signal.IsShortEntry()))
                         || existingPosition.TradeType == TradeType.Short && (signal.IsLongEntry() || signal.IsShortExit()))
                     {
-                        PlaceLimitOrder(signal.TradeType, ProductType.MIS, 1, signal.Price, signal.Price);
+                        PlaceLimitOrder(signal.TradeType, ProductType.MIS, 1, signal.Price, signal.StopLoss);
                     }
                 }
                 else
                 {
-                    PlaceLimitOrder(signal.TradeType, ProductType.MIS, 1, signal.Price, signal.Price);
+                    PlaceLimitOrder(signal.TradeType, ProductType.MIS, 1, signal.Price, signal.StopLoss);
                 }
             }
         }

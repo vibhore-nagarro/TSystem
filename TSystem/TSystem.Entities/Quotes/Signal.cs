@@ -12,6 +12,7 @@ namespace TSystem.Entities
         public TradeType TradeType { get; set; } = TradeType.None;
         public int Strength { get; set; } = 0;
         public decimal Price { get; set; } = 0m;
+        public decimal? StopLoss { get; set; } = null;
         public DateTime TimeStamp { get; set; }
         public bool IsDualSignal { get; set; }
         public bool IsLongEntry()

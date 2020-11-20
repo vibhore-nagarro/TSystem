@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using TSystem.Common;
 using TSystem.Entities;
 
 namespace TSystem.Core
@@ -40,7 +41,8 @@ namespace TSystem.Core
 
         private void Ticker_OnTick(KiteConnect.Tick tickData)
         {
-            ticks.Add(tickData);
+            if (tickData.Timestamp.Value.Date == DateTime.Today)
+                ticks.Add(tickData);
             //Debug.WriteLine(tickData.LastPrice);
         }
 
@@ -49,16 +51,20 @@ namespace TSystem.Core
             secondsTimer.Elapsed += SecondsTimer_Elapsed;
             timer1.Elapsed += Timer1_Elapsed;
             timer3.Elapsed += Timer3_Elapsed;
+            timer5.Elapsed += Timer5_Elapsed;
         }        
 
         private void SecondsTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (e.SignalTime.Second == 0)
+            if (e.SignalTime.Second == 0 && e.SignalTime.Minute % 5 == 0)
+                //if (e.SignalTime.Second == 0)
             {
-                timer1.Start();
+                //timer1.Start();
                 //timer3.Start();
+                timer5.Start();
                 secondsTimer.Stop();
                 secondsTimer.Dispose();
+                Logger.Log("Timer started");                
             }            
         }
 
@@ -66,7 +72,9 @@ namespace TSystem.Core
 
         private void Timer1_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var lastTicks = ticks.Where(tick => tick.Timestamp >= e.SignalTime.AddMinutes(-1) && tick.Timestamp < e.SignalTime);
+            var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+            var lastTicks = ticks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(-1) && tick.Timestamp < signalTime);
+
             if (lastTicks.Any() == false)
                 return;
 
@@ -83,7 +91,7 @@ namespace TSystem.Core
                 High = high,
                 Low = low,
                 Volume = volume,
-                TimeStamp = e.SignalTime.AddMinutes(-1)
+                TimeStamp = signalTime.AddMinutes(-1)
             };
 
             ulong netVolume = volume;
@@ -92,14 +100,16 @@ namespace TSystem.Core
                 netVolume = (ulong)(volume - lastVolume);
             }
             candle.CandleVolume = netVolume;
-            lastVolume = (long)netVolume;
+            lastVolume = (long)volume;
 
             OnCandleReceived(candle, CandleType.Minute);
+            Logger.Log(candle.ToString());
         }
 
         private void Timer3_Elapsed(object sender, ElapsedEventArgs e)
         {
-            var lastTicks = ticks.Where(tick => tick.Timestamp >= e.SignalTime.AddMinutes(-3) && tick.Timestamp < e.SignalTime);
+            var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+            var lastTicks = ticks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(-3) && tick.Timestamp < signalTime);
             if (lastTicks.Any() == false)
                 return;
 
@@ -116,7 +126,7 @@ namespace TSystem.Core
                 High = high,
                 Low = low,
                 Volume = volume,
-                TimeStamp = e.SignalTime.AddMinutes(-3)
+                TimeStamp = signalTime.AddMinutes(-3)
             };
 
             ulong netVolume = volume;
@@ -125,9 +135,43 @@ namespace TSystem.Core
                 netVolume = (ulong)(volume - lastVolume);
             }
             candle.CandleVolume = netVolume;
-            lastVolume = (long)netVolume;
+            lastVolume = (long)volume;
 
             OnCandleReceived(candle, CandleType.Minute);
+        }
+        private void Timer5_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+            var lastTicks = ticks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(-5) && tick.Timestamp < signalTime);
+            if (lastTicks.Any() == false)
+                return;
+
+            var open = lastTicks.First().LastPrice;
+            var close = lastTicks.Last().LastPrice;
+            var high = lastTicks.Max(tick => tick.LastPrice);
+            var low = lastTicks.Min(tick => tick.LastPrice);
+            var volume = lastTicks.Last().Volume;
+
+            var candle = new Candle()
+            {
+                Open = open,
+                Close = close,
+                High = high,
+                Low = low,
+                Volume = volume,
+                TimeStamp = signalTime.AddMinutes(-5)
+            };
+
+            ulong netVolume = volume;
+            if (lastVolume > -1)
+            {
+                netVolume = (ulong)(volume - lastVolume);
+            }
+            candle.CandleVolume = netVolume;
+            lastVolume = (long)volume;
+
+            OnCandleReceived(candle, CandleType.FiveMinute);
+            Logger.Log(candle.ToString());
         }
     }
 }

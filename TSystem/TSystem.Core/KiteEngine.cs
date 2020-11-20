@@ -41,13 +41,13 @@ namespace TSystem.Core
         #region Methods
         private void InitSession()
         {
-            AccessToken = "lgOEpvjei2E7LV5Kp2CEdkcY5ziuYa99";
-            PublicToken = "EKfL6ljanaCIfVSbtwtlELBs82pT4L12";
+            AccessToken = "xB4kn7fcaLJLtx2u6EDMKtSzvg6XBK5Q";
+            PublicToken = "o4gvpN7zm9EhrLHzvmnGCm4fpex7woA8";
 
             if (string.IsNullOrEmpty(AccessToken) || string.IsNullOrEmpty(PublicToken))
             {
                 string url = Kite.GetLoginURL();
-                string requestToken = "mmj9Wdof7Flcy2v5tfxGjeQWEe1DF3qj";
+                string requestToken = "2Cu2z51ZItZqip5VQIzVWNR013e6leev";
                 User user = Kite.GenerateSession(requestToken, appSecret);
 
                 AccessToken = user.AccessToken;

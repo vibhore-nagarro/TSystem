@@ -8,6 +8,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Timers;
+using TSystem.Common;
 using TSystem.Core.Contracts;
 using TSystem.Core.Events;
 using TSystem.Entities;
@@ -49,8 +50,8 @@ namespace TSystem.Core
 
         public AnalysisEngine()
         {
-            marketDataEngine = new HistoricalMarketDataEngine();
-            //marketDataEngine = new LiveMarketDataEngine();
+            //marketDataEngine = new HistoricalMarketDataEngine();
+            marketDataEngine = new LiveMarketDataEngine();
             tradeEngine = new TradeEngine();
             riskEngine = RiskEngine.Instance;
         }        
@@ -71,6 +72,12 @@ namespace TSystem.Core
                     ProcessDayCandle(e.Candle);
                     break;
                 case CandleType.Minute:
+                    ProcessMinuteCandle(e.Candle);
+                    break;
+                case CandleType.FiveMinute:
+                    ProcessMinuteCandle(e.Candle);
+                    break;
+                default:
                     ProcessMinuteCandle(e.Candle);
                     break;
             }
@@ -97,7 +104,7 @@ namespace TSystem.Core
             OnCandleCreated(candle);
             OnHeikinAshiRecieved(analyzer.Model.HeikinAshi.Last());
 
-            System.RunAll(analyzer.Model);
+            //System.RunAll(analyzer.Model);
 
             var signal = analyzer.Analyze();
 
@@ -149,6 +156,7 @@ namespace TSystem.Core
 
         private void ProcessSignal(Signal signal)
         {
+            Logger.Log(signal.ToString());
             Analyzer analyzer = analyzers[signal.Instrument];
             //tradeEngine.ProcessSignal(signal, analyzer);
         }

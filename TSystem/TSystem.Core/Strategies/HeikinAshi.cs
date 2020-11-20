@@ -17,8 +17,8 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
             if (model.HeikinAshi.Count < 3) return signal;
-            if (0.01m > model.HeikinAshi.Last().Body) return signal;
-            if (0.01m > model.Candles.Last().Body) return signal;
+            //if (0.01m > model.HeikinAshi.Last().Body) return signal;
+            //if (0.01m > model.Candles.Last().Body) return signal;
 
             if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.Last();
             if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.Last();

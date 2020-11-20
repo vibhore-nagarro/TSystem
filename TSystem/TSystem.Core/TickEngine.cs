@@ -65,9 +65,9 @@ namespace TSystem.Core
         {
             //tokens = new UInt32[] { 12084738 }; // - Nifty
             //tokens = new UInt32[] { 57477639 }; // - Gold
-            //tokens = new UInt32[] { 780803 }; // - USDINR
-            tokens = new UInt32[] { 12084482 }; // - Bank Nifty
-            
+            tokens = new UInt32[] { 780803 }; // - USDINR
+                                              //tokens = new UInt32[] { 12084482 }; // - Bank Nifty
+
             ticker.Subscribe(tokens);
             ticker.SetMode(tokens, Mode: Constants.MODE_FULL);
         }
