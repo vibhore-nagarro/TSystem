@@ -33,6 +33,7 @@ namespace TSystem.Core
         }
 
         public Ticker Ticker { get { return ticker; } }
+        public uint[] Tokens { get { return tokens; } }
 
         #endregion
 
@@ -59,6 +60,7 @@ namespace TSystem.Core
 
             SubscribeToInstruments();
         }
+
         UInt32[] tokens = null;
         decimal p1, p2;
         private void SubscribeToInstruments()

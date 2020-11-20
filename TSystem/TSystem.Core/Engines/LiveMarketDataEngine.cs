@@ -65,12 +65,12 @@ namespace TSystem.Core
 
         private void SecondsTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            if (e.SignalTime.Second == 0 && e.SignalTime.Minute % 5 == 0)
-                //if (e.SignalTime.Second == 0)
+            //if (e.SignalTime.Second == 0 && e.SignalTime.Minute % 5 == 0)
+            if (e.SignalTime.Second == 0)
             {
-                //timer1.Start();
+                timer1.Start();
                 //timer3.Start();
-                timer5.Start();
+                //timer5.Start();
                 secondsTimer.Stop();
                 secondsTimer.Dispose();
                 Logger.Log("Timer started");                
@@ -95,9 +95,48 @@ namespace TSystem.Core
 
         private void ProcessTimerTick(ElapsedEventArgs e, CandleType candleType)
         {
-            Parallel.ForEach(ticks, (instrumentTicks) => 
+            //Parallel.ForEach(ticks, (instrumentTicks) => 
+            //{
+            //    var allTicks = instrumentTicks.Value;
+            //    int backTrackMinutes = GetMinutesToTrack(candleType);
+            //    var signalTime = e.SignalTime;
+            //    //var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+            //    var lastTicks = allTicks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(backTrackMinutes) && tick.Timestamp < signalTime);
+
+            //    if (lastTicks.Any() == false)
+            //        return;
+
+            //    var open = lastTicks.First().LastPrice;
+            //    var close = lastTicks.Last().LastPrice;
+            //    var high = lastTicks.Max(tick => tick.LastPrice);
+            //    var low = lastTicks.Min(tick => tick.LastPrice);
+            //    var volume = lastTicks.Last().Volume;
+
+            //    var candle = new Candle()
+            //    {
+            //        Open = open,
+            //        Close = close,
+            //        High = high,
+            //        Low = low,
+            //        Volume = volume,
+            //        TimeStamp = signalTime.AddMinutes(backTrackMinutes),
+            //        Instrument = lastTicks.Last().InstrumentToken,
+            //    };
+
+            //    ulong netVolume = volume;
+            //    if (lastVolume > -1)
+            //    {
+            //        netVolume = (ulong)(volume - lastVolume);
+            //    }
+            //    candle.CandleVolume = netVolume;
+            //    lastVolume = (long)volume;
+
+            //    OnCandleReceived(candle, CandleType.Minute);
+            //    Logger.Log(candle.ToString());
+            //});
+            foreach (var instrument in ticks.Keys)
             {
-                var allTicks = instrumentTicks.Value;
+                var allTicks = ticks[instrument];
                 int backTrackMinutes = GetMinutesToTrack(candleType);
                 var signalTime = e.SignalTime;
                 //var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
@@ -133,49 +172,9 @@ namespace TSystem.Core
 
                 OnCandleReceived(candle, CandleType.Minute);
                 Logger.Log(candle.ToString());
-            });
-            //foreach(var instrument in ticks.Keys)
-            //{
-            //    Task.Factory.StartNew(() => 
-            //    {
-            //        var allTicks = ticks[instrument];
-            //        int backTrackMinutes = GetMinutesToTrack(candleType);
-            //        var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
-            //        var lastTicks = allTicks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(backTrackMinutes) && tick.Timestamp < signalTime);
-
-            //        if (lastTicks.Any() == false)
-            //            return;
-
-            //        var open = lastTicks.First().LastPrice;
-            //        var close = lastTicks.Last().LastPrice;
-            //        var high = lastTicks.Max(tick => tick.LastPrice);
-            //        var low = lastTicks.Min(tick => tick.LastPrice);
-            //        var volume = lastTicks.Last().Volume;
-
-            //        var candle = new Candle()
-            //        {
-            //            Open = open,
-            //            Close = close,
-            //            High = high,
-            //            Low = low,
-            //            Volume = volume,
-            //            TimeStamp = signalTime.AddMinutes(backTrackMinutes)
-            //        };
-
-            //        ulong netVolume = volume;
-            //        if (lastVolume > -1)
-            //        {
-            //            netVolume = (ulong)(volume - lastVolume);
-            //        }
-            //        candle.CandleVolume = netVolume;
-            //        lastVolume = (long)volume;
-
-            //        OnCandleReceived(candle, CandleType.Minute);
-            //        Logger.Log(candle.ToString());
-            //    });
-            //}            
+            }
         }
-
+        
         private static int GetMinutesToTrack(CandleType candleType)
         {
             int backTrackMinutes = -1;

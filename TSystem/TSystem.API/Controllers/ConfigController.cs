@@ -33,5 +33,12 @@ namespace TSystem.API.Controllers
 
             return Ok(instruments);
         }
+
+        [HttpGet]
+        [Route("tokens")]
+        public IActionResult GetTokens()
+        {
+            return Ok(TickEngine.Instance.Tokens.ToList());
+        }
     }
 }

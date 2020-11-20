@@ -32,14 +32,35 @@ namespace TSystem.UI.UWP
         public ObservableCollection<Signal> Signals { get; set; } = new ObservableCollection<Signal>();
         public ObservableCollection<Candle> Candles { get; set; } = new ObservableCollection<Candle>();
         public ObservableCollection<Candle> HeikinAshi { get; set; } = new ObservableCollection<Candle>();
+        public IEnumerable<Signal> FilteredSignals { get { return Signals.Where(s => s.Instrument == SelectedToken); } }
+        public IEnumerable<Candle> FilteredCandles { get { return Candles.Where(s => s.Instrument == SelectedToken); } }
+        public IEnumerable<Candle> FilteredHeikinAshi { get { return HeikinAshi.Where(s => s.Instrument == SelectedToken); } }
         public ObservableCollection<LogEntry> Logs { get; set; } = new ObservableCollection<LogEntry>();
         public MarketEngineMode SelectedMarketEngineMode { get; set; } = MarketEngineMode.Live;
         public List<MarketEngineMode> MarketEngineModes { get; set; } = new List<MarketEngineMode>() { MarketEngineMode.Historical, MarketEngineMode.Live };
+        public ObservableCollection<uint> Tokens { get; set; } = new ObservableCollection<uint>();
+        private uint selectedToken { get; set; }
+        public uint SelectedToken
+        {
+            get
+            {
+                return selectedToken;
+            }
+            set
+            {
+                selectedToken = value;
+                OnPropertyChanged(nameof(FilteredCandles));
+                OnPropertyChanged(nameof(FilteredHeikinAshi));
+                OnPropertyChanged(nameof(FilteredSignals));
+                OnPropertyChanged(nameof(SelectedToken));
+            }
+        }
 
         public async void OnLoad()
         {
             await Start();
             //LoadInstruments();
+            LoadTokens();            
         }
 
         public async Task Start()
@@ -78,19 +99,29 @@ namespace TSystem.UI.UWP
             await Windows.Storage.FileIO.WriteLinesAsync(storageFile, db);
         }
 
+        public async void LoadTokens()
+        {
+            var tokens = await Server.Instance.GetTokens();
+            tokens.ForEach(token => Tokens.Add(token));
+            SelectedToken = Tokens[0];
+        }
+
         private void OnCandle(Candle candle)
         {
             Candles.Add(candle);
+            OnPropertyChanged(nameof(FilteredCandles));
         }
 
         private void OnHeikinAshi(Candle candle)
         {
             HeikinAshi.Add(candle);
+            OnPropertyChanged(nameof(FilteredHeikinAshi));
         }
 
         private void OnSignal(Signal signal)
         {
             Signals.Add(signal);
+            OnPropertyChanged(nameof(FilteredSignals));
         }
 
         private void OnLog(LogEntry logEntry)

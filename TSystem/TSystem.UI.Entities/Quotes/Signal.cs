@@ -7,6 +7,7 @@ namespace TSystem.Entities
 {
     public class Signal
     {
+        public uint Instrument { get; set; }
         public SignalType SignalType { get; set; } = SignalType.None;
         public TradeType TradeType { get; set; } = TradeType.None;
         public int Strength { get; set; } = 0;

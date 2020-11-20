@@ -32,5 +32,14 @@ namespace TSystem.UI.UWP
             var response = await client.ExecuteAsync<List<Instrument>>(request);
             return response.Data;
         }
+
+        public async Task<List<uint>> GetTokens()
+        {
+            RestClient client = new RestClient(serverURL);
+            IRestRequest request = new RestRequest(@"api/config/tokens", Method.GET);
+
+            var response = await client.ExecuteAsync<List<uint>>(request);
+            return response.Data;
+        }
     }
 }

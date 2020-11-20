@@ -189,7 +189,7 @@ namespace TSystem.Core
             heikinAshi.CandleVolume = candle.CandleVolume;
             heikinAshi.Volume = candle.Volume;
             heikinAshi.TimeStamp = candle.TimeStamp;
-
+            heikinAshi.Instrument = candle.Instrument;
             heikinAshi.Index = (uint)analysisModel.HeikinAshi.Count;
             analysisModel.HeikinAshi.Add(heikinAshi);
         }

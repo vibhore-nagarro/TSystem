@@ -18,9 +18,18 @@
         </ResourceDictionary>
     </Page.Resources>
     <Grid>
-        <controls:TabView>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="0 32">
+            <TextBlock Text="Instruments" Margin="5 10" FontWeight="Bold" HorizontalTextAlignment="Center"/>
+            <ListBox ItemsSource="{Binding Tokens}" SelectedItem="{Binding SelectedToken,Mode=TwoWay}" Margin="5 0" />
+        </StackPanel>
+        
+        <controls:TabView Grid.Column="1">
             <controls:TabViewItem Header="Candles">
-                <controls:DataGrid ItemsSource="{Binding Candles}" AutoGenerateColumns="False">
+                <controls:DataGrid ItemsSource="{Binding FilteredCandles}" AutoGenerateColumns="False">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Converter={StaticResource ShortDateConverter}}"/>
                         <controls:DataGridTextColumn Header="Open" Binding="{Binding Open, Converter={StaticResource NumberRoundConverter}}"/>
@@ -52,7 +61,7 @@
                 </controls:DataGrid>
             </controls:TabViewItem>
             <controls:TabViewItem Header="HeikinAshi">
-                <controls:DataGrid ItemsSource="{Binding HeikinAshi}" AutoGenerateColumns="False">
+                <controls:DataGrid ItemsSource="{Binding FilteredHeikinAshi}" AutoGenerateColumns="False">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Converter={StaticResource ShortDateConverter}}"/>
                         <controls:DataGridTextColumn Header="Open" Binding="{Binding Open, Converter={StaticResource NumberRoundConverter}}"/>
@@ -84,7 +93,7 @@
                 </controls:DataGrid>
             </controls:TabViewItem>
             <controls:TabViewItem Header="Signals">
-                <controls:DataGrid ItemsSource="{Binding Signals}" AutoGenerateColumns="False">
+                <controls:DataGrid ItemsSource="{Binding FilteredSignals}" AutoGenerateColumns="False">
                     <controls:DataGrid.Columns>
                         <controls:DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Converter={StaticResource ShortDateConverter}}"/>
                         <controls:DataGridTextColumn Header="TradeType" Binding="{Binding TradeType}"/>
