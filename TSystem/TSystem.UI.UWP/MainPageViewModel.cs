@@ -20,6 +20,7 @@ namespace TSystem.UI.UWP
     {
         public event PropertyChangedEventHandler PropertyChanged;
         string serverURL = "https://tsystem-api.azurewebsites.net/";
+        //string serverURL = "https://localhost:44340/analysis";
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -29,32 +30,10 @@ namespace TSystem.UI.UWP
         public ObservableCollection<Candle> Candles { get; set; } = new ObservableCollection<Candle>();
         public ObservableCollection<Candle> HeikinAshi { get; set; } = new ObservableCollection<Candle>();
         public ObservableCollection<LogEntry> Logs { get; set; } = new ObservableCollection<LogEntry>();
-
-        Timer timer1 = new Timer(1 * 1000 * 60);
+       
         public async void OnLoad()
         {
             await Start();
-
-            timer1.Elapsed += Timer1_Elapsed;
-            timer1.Start();
-        }
-
-        private async void Timer1_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            RestClient client = new RestClient(serverURL + @"api/");
-            IRestRequest request = new RestRequest("home/logs", Method.GET);
-
-            var logs = client.Execute<List<LogEntry>>(request).Data;
-            foreach(var log in logs)
-            {
-                if(Logs.FirstOrDefault(l => l.Timestamp == log.Timestamp) == null)
-                {
-                    await Windows.ApplicationModel.Core.CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
-                    {
-                        Logs.Add(log);
-                    });                    
-                }
-            }
         }
 
         public async Task Start()

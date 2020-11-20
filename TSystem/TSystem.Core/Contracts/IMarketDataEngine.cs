@@ -8,6 +8,7 @@ namespace TSystem.Core
     public enum CandleType
     {
         Minute,
+        ThreeMinute,
         FiveMinute,
         TenMinute,
         FifteenMinute,
