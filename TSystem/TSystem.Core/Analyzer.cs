@@ -65,7 +65,6 @@ namespace TSystem.Core
         {
             analysisModel.Ticks.Add(tick);
             analysisModel.LTP = tick.LastPrice;
-            //Debug.WriteLine($"LTP = {tick.LastPrice}");
         }
 
         public Signal Analyze()
@@ -238,7 +237,6 @@ namespace TSystem.Core
             if (signal.SignalType != SignalType.None)
             {
                 OnSignalRecieved(signal);                               
-                Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price}");
             }
         }
 
@@ -321,8 +319,7 @@ namespace TSystem.Core
 
                     var date = analysisModel.HeikinAshi.Last().TimeStamp;
                     analysisModel.Signals.Add(signal);
-
-                    Debug.WriteLine($"{signal.TradeType} {signal.SignalType} @ {signal.Price} on {signal.TimeStamp.ToShortDateString()}");
+                    
                     fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
                 }
                 else

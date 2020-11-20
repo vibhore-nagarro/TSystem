@@ -183,7 +183,7 @@ namespace TSystem.Core.Models
             macdData = macdData.Take(count).ToList();
             if (macdData.Count > 0)
             {
-                Debug.WriteLine($"Tick({Candles.Count}), LTP = {Candles.Last().Close}, MACD = {macdData.Last().Value}, Signal = {macdData.Last().Signal}, Histogram = {macdData.Last().Histogram}");
+                
             }
             return macdData;
         }

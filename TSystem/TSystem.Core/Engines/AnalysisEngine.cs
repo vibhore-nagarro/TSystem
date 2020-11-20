@@ -60,7 +60,9 @@ namespace TSystem.Core
 
         public void ChangeEngine(IMarketDataEngine engine)
         {
+            marketDataEngine.CandleReceived -= MarketData_CandleReceived;
             marketDataEngine = engine;
+            Start();
         }
 
         public void Start()
@@ -140,6 +142,8 @@ namespace TSystem.Core
 
         private Analyzer GetAnalyzer(Candle candle)
         {
+            if (candle.Instrument <= 0)
+                throw new ArgumentException("Invalid Instrument Toekn");
             Analyzer analyzer = null;
             if (analyzers.ContainsKey(candle.Instrument))
             {

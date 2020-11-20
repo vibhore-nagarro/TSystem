@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Timers;
 using TSystem.Entities;
 using TSystem.Entities.Enums;
 using TSystem.UI.Entities;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 
@@ -37,6 +39,7 @@ namespace TSystem.UI.UWP
         public async void OnLoad()
         {
             await Start();
+            //LoadInstruments();
         }
 
         public async Task Start()
@@ -54,15 +57,25 @@ namespace TSystem.UI.UWP
 
         public async void UpdateConfig()
         {
-            RestClient client = new RestClient(serverURL);
-            IRestRequest request = new RestRequest(@"api/config/marketmode", Method.POST);
-            request.AddQueryParameter("engineMode", ((int)SelectedMarketEngineMode).ToString());
-
-            var response = await client.ExecuteAsync(request);
-            if(response.IsSuccessful)
+            await Server.Instance.UpdateConfig(SelectedMarketEngineMode);
+        }
+        public async void LoadInstruments()
+        {
+            List<string> db = new List<string>();
+            var response = await Server.Instance.GetInstruments();
+            foreach (var item in response)
             {
-
+                string line = $"{item.InstrumentToken},{item.Name},{item.TradingSymbol},{item.Exchange},{item.Segment},{item.InstrumentType},{item.Expiry},{item.LotSize},{item.Strike},{item.TickSize},{item.ExchangeToken}";
+                db.Add(line);
             }
+
+            var fut = response.Where(r => r.InstrumentType.Contains("FUT")).ToList();
+
+            AppData.Instance.Cache.CreateEntry("Instruments").Value = fut;
+            
+            StorageFolder storageFolder = Windows.Storage.ApplicationData.Current.LocalFolder;
+            StorageFile storageFile = await storageFolder.CreateFileAsync("masterDB.csv", CreationCollisionOption.ReplaceExisting);
+            await Windows.Storage.FileIO.WriteLinesAsync(storageFile, db);
         }
 
         private void OnCandle(Candle candle)
