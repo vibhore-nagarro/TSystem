@@ -11,7 +11,8 @@ namespace TSystem.UI.UWP
 {
     public class Server
     {
-        string serverURL = "https://localhost:44340/";
+        public string serverURL = "https://localhost:44340/";
+        //public readonly string serverURL = "https://tsystem-api.azurewebsites.net/";
         private static readonly Server instance = new Server();
         public static Server Instance { get { return instance; } }
         

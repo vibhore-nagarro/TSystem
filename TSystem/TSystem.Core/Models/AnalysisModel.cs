@@ -82,8 +82,9 @@ namespace TSystem.Core.Models
         public decimal LastTradePL { get; set; }
         public decimal PeriodPeak { get; set; }
         public decimal PeriodTrough { get; set; }
-        public bool IsPositionOpen { get; set; }
-        
+        public decimal PreviousLow { get; set; } = decimal.MaxValue;
+        public decimal PreviousHigh { get; set; } = decimal.MinValue;
+
         #endregion
 
         #region Methods

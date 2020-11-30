@@ -17,8 +17,8 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
             if (model.HeikinAshi.Count < 3) return signal;
-            //if (0.01m > model.HeikinAshi.Last().Body) return signal;
-            //if (0.01m > model.Candles.Last().Body) return signal;
+            if (2m > model.HeikinAshi.Last().Body) return signal;
+            if (2m > model.Candles.Last().Body) return signal;
 
             if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.Last();
             if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.Last();
@@ -32,7 +32,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
             var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
 
-            if(currentCandle.TimeStamp.Hour == 10 && currentCandle.TimeStamp.Minute == 40)
+            if(currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 25)
             {
 
             }
@@ -53,7 +53,9 @@ namespace TSystem.Core.Strategies
 
             UpdateLeadingHeikinAshi(model);
             UpdateLeadingCandle(model);
-            
+
+            if (signal.SignalType == SignalType.Entry && (currentCandle.Body < 5m || currentHeikinAshi.Body < 5m))
+                signal = new Signal() { };
             return signal;
         }
         private Signal LongEntry(AnalysisModel model)
@@ -109,6 +111,16 @@ namespace TSystem.Core.Strategies
 
                     signal.Price = currentHeikinAshi.Close;
                 }                
+            }
+            if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsGreen)
+            {
+                if (currentHeikinAshi.Close > previousHeikinAshi.Close && currentCandle.Body > model.AverageCandleBody)
+                {
+                    signal.SignalType = SignalType.Entry;
+                    signal.TradeType = TradeType.Long;
+                    signal.Strength = 50;
+                    signal.Price = currentHeikinAshi.Close;
+                }
             }
             if (currentCandle.IsGreen)
             {

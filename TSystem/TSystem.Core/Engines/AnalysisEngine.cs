@@ -50,8 +50,8 @@ namespace TSystem.Core
 
         public AnalysisEngine()
         {
-            //marketDataEngine = new HistoricalMarketDataEngine();
-            marketDataEngine = new LiveMarketDataEngine();
+            marketDataEngine = new BackTestHistoricalDataEngine();
+            //marketDataEngine = new LiveMarketDataEngine();
             tradeEngine = new TradeEngine();
             riskEngine = RiskEngine.Instance;
         }        
@@ -108,6 +108,21 @@ namespace TSystem.Core
             analyzer.Model.LTP = candle.Close;
             analyzer.Model.Candles.Add(candle);
             analyzer.BuildHekinAshiCandle();
+
+            if (candle.Close < analyzer.Model.PreviousLow)
+            {
+                analyzer.Model.PreviousLow = candle.Close;
+                analyzer.Model.PreviousHigh = decimal.MinValue;
+            }
+
+            if (candle.Close > analyzer.Model.PreviousHigh)
+            {
+                analyzer.Model.PreviousLow = decimal.MaxValue;
+                analyzer.Model.PreviousHigh = candle.Close;
+            }
+
+            Debug.WriteLine($"High - {analyzer.Model.PreviousHigh}, Low - {analyzer.Model.PreviousLow}");
+
             OnCandleCreated(candle);
             OnHeikinAshiRecieved(analyzer.Model.HeikinAshi.Last());
 

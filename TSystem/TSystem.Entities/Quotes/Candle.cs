@@ -135,8 +135,8 @@ namespace TSystem.Entities
 
         public bool IsCrossingLeadingCandle(Candle leadingCandle)
         {
-            return this.IsGreen ? this.Close > (leadingCandle.IsGreen ? leadingCandle.Close : leadingCandle.Open) :
-                this.Close < (leadingCandle.IsGreen ? leadingCandle.Open : leadingCandle.Close);
+            return this.IsGreen ? this.Close >= (leadingCandle.IsGreen ? leadingCandle.Close : leadingCandle.Open) :
+                this.Close <= (leadingCandle.IsGreen ? leadingCandle.Open : leadingCandle.Close);
         }
 
         public override string ToString()

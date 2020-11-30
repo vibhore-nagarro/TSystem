@@ -43,7 +43,7 @@ namespace TSystem.API
             }
             else if(engineMode == MarketEngineMode.Historical)
             {
-                analysisEngine.ChangeEngine(new HistoricalMarketDataEngine());
+                analysisEngine.ChangeEngine(new BackTestHistoricalDataEngine());
                 Logger.Log($"Market mode changed to Historical");
             }
         }

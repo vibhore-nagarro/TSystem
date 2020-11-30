@@ -42,16 +42,24 @@ namespace TSystem.Core
 
         private void Ticker_OnTick(KiteConnect.Tick tickData)
         {
-            if (tickData.Timestamp.Value.Date == DateTime.Today)
+            try
             {
-                if (ticks.Keys.Contains(tickData.InstrumentToken))
+                var today = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(DateTime.Today.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+                if (tickData.Timestamp.Value.Date == today.Date)
                 {
-                    ticks[tickData.InstrumentToken].Add(tickData);
+                    if (ticks.Keys.Contains(tickData.InstrumentToken))
+                    {
+                        ticks[tickData.InstrumentToken].Add(tickData);
+                    }
+                    else
+                    {
+                        ticks.Add(tickData.InstrumentToken, new List<KiteConnect.Tick>() { tickData });
+                    }
                 }
-                else
-                {
-                    ticks.Add(tickData.InstrumentToken, new List<KiteConnect.Tick>() { tickData });
-                }
+            }
+            catch(Exception ex)
+            {
+                Logger.Log($"Error in Tick {ex}");
             }
         }
 
@@ -65,12 +73,12 @@ namespace TSystem.Core
 
         private void SecondsTimer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            //if (e.SignalTime.Second == 0 && e.SignalTime.Minute % 5 == 0)
-            if (e.SignalTime.Second == 0)
+            if (e.SignalTime.Second == 0 && e.SignalTime.Minute % 5 == 0)
+                //if (e.SignalTime.Second == 0)
             {
-                timer1.Start();
+                //timer1.Start();
                 //timer3.Start();
-                //timer5.Start();
+                timer5.Start();
                 secondsTimer.Stop();
                 secondsTimer.Dispose();
                 Logger.Log("Timer started");                
@@ -134,44 +142,50 @@ namespace TSystem.Core
             //    OnCandleReceived(candle, CandleType.Minute);
             //    Logger.Log(candle.ToString());
             //});
-            foreach (var instrument in ticks.Keys)
+            try
             {
-                var allTicks = ticks[instrument];
-                int backTrackMinutes = GetMinutesToTrack(candleType);
-                var signalTime = e.SignalTime;
-                //var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
-                var lastTicks = allTicks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(backTrackMinutes) && tick.Timestamp < signalTime);
-
-                if (lastTicks.Any() == false)
-                    return;
-
-                var open = lastTicks.First().LastPrice;
-                var close = lastTicks.Last().LastPrice;
-                var high = lastTicks.Max(tick => tick.LastPrice);
-                var low = lastTicks.Min(tick => tick.LastPrice);
-                var volume = lastTicks.Last().Volume;
-
-                var candle = new Candle()
+                foreach (var instrument in ticks.Keys)
                 {
-                    Open = open,
-                    Close = close,
-                    High = high,
-                    Low = low,
-                    Volume = volume,
-                    TimeStamp = signalTime.AddMinutes(backTrackMinutes),
-                    Instrument = lastTicks.Last().InstrumentToken,
-                };
+                    var allTicks = ticks[instrument];
+                    int backTrackMinutes = GetMinutesToTrack(candleType);
+                    //var signalTime = e.SignalTime;
+                    var signalTime = TimeZoneInfo.ConvertTimeFromUtc(new DateTime(e.SignalTime.Ticks, DateTimeKind.Utc), TimeZoneInfo.FindSystemTimeZoneById("India Standard Time"));
+                    var lastTicks = allTicks.Where(tick => tick.Timestamp >= signalTime.AddMinutes(backTrackMinutes) && tick.Timestamp < signalTime);
 
-                ulong netVolume = volume;
-                if (lastVolume > -1)
-                {
-                    netVolume = (ulong)(volume - lastVolume);
+                    if (lastTicks.Any() == false)
+                        return;
+
+                    var open = lastTicks.First().LastPrice;
+                    var close = lastTicks.Last().LastPrice;
+                    var high = lastTicks.Max(tick => tick.LastPrice);
+                    var low = lastTicks.Min(tick => tick.LastPrice);
+                    var volume = lastTicks.Last().Volume;
+
+                    var candle = new Candle()
+                    {
+                        Open = open,
+                        Close = close,
+                        High = high,
+                        Low = low,
+                        Volume = volume,
+                        TimeStamp = signalTime.AddMinutes(backTrackMinutes),
+                        Instrument = lastTicks.Last().InstrumentToken,
+                    };
+
+                    ulong netVolume = volume;
+                    if (lastVolume > -1)
+                    {
+                        netVolume = (ulong)(volume - lastVolume);
+                    }
+                    candle.CandleVolume = netVolume;
+                    lastVolume = (long)volume;
+
+                    OnCandleReceived(candle, CandleType.Minute);
+                    Logger.Log(candle.ToString());
                 }
-                candle.CandleVolume = netVolume;
-                lastVolume = (long)volume;
-
-                OnCandleReceived(candle, CandleType.Minute);
-                Logger.Log(candle.ToString());
+            }catch(Exception ex)
+            {
+                Logger.Log($"Error in processing Tick {ex}");
             }
         }
         

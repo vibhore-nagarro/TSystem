@@ -23,7 +23,8 @@ namespace TSystem.UI.UWP
     {
         public event PropertyChangedEventHandler PropertyChanged;
         //string serverURL = "https://tsystem-api.azurewebsites.net/";
-        string serverURL = "https://localhost:44340/";
+        //string serverURL = "https://localhost:44340/";
+        string serverURL = Server.Instance.serverURL;
         private void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -60,7 +61,7 @@ namespace TSystem.UI.UWP
         {
             await Start();
             //LoadInstruments();
-            LoadTokens();            
+            LoadTokens();
         }
 
         public async Task Start()

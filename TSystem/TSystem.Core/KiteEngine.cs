@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using TSystem.Common;
 
 namespace TSystem.Core
 {
@@ -41,13 +42,13 @@ namespace TSystem.Core
         #region Methods
         private void InitSession()
         {
-            AccessToken = "xB4kn7fcaLJLtx2u6EDMKtSzvg6XBK5Q";
-            PublicToken = "o4gvpN7zm9EhrLHzvmnGCm4fpex7woA8";
+            AccessToken = "5H8MTIqm84MA30w2uvVEjLP9CYrvQZlj";
+            PublicToken = "1yPi2XwKgMZuWzSVuc4nC7Jfo4tJbWp9";
 
             if (string.IsNullOrEmpty(AccessToken) || string.IsNullOrEmpty(PublicToken))
             {
                 string url = Kite.GetLoginURL();
-                string requestToken = "2Cu2z51ZItZqip5VQIzVWNR013e6leev";
+                string requestToken = "xrmMR292jffBD5624HXkjLzlQuapvlUw";
                 User user = Kite.GenerateSession(requestToken, appSecret);
 
                 AccessToken = user.AccessToken;
@@ -67,6 +68,7 @@ namespace TSystem.Core
 
         private void OnTokenExpire()
         {
+            Logger.Log("Token Expired");
         }
 
         #endregion
