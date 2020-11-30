@@ -70,7 +70,12 @@ namespace TSystem.Core.Models
 
         public Candle LeadingHeikinAshi { get; set; }
         public Candle LeadingCandle { get; set; }
+        public Candle CurrentHeikinAshi { get { return HeikinAshi.Last(); } }
+        public Candle CurrentCandle { get { return Candles.Last(); } }
+        public Candle PreviousHeikinAshi { get { return HeikinAshi.OrderByDescending(c => c.Index).Skip(1).First(); } }
+        public Candle PreviousCandle { get { return Candles.OrderByDescending(c => c.Index).Skip(1).First(); } }
 
+        
         public decimal ProfitLoss
         {
             get;

@@ -23,14 +23,10 @@ namespace TSystem.Core.Strategies
             if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.Last();
             if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.Last();
 
-            var currentHeikinAshi = model.HeikinAshi.Last();
-            var currentCandle = model.Candles.Last();
-
-            uint lastHeikinAshiIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
-            uint lastIndex = model.Candles.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
-
-            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
-            var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
             if(currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 25)
             {
@@ -62,14 +58,10 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
-            var currentHeikinAshi = model.HeikinAshi.Last();
-            var currentCandle = model.Candles.Last();
-
-            uint lastHeikinAshiIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
-            uint lastIndex = model.Candles.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
-
-            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
-            var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
             // Trend Reversal
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
@@ -139,14 +131,10 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
-            var currentHeikinAshi = model.HeikinAshi.Last();
-            var currentCandle = model.Candles.Last();
-
-            uint lastHeikinAshiIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
-            uint lastIndex = model.Candles.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
-
-            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastHeikinAshiIndex);
-            var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
             {
@@ -209,9 +197,10 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
-            var currentCandle = model.Candles.Last();
-            var currentHeikinAshi = model.HeikinAshi.Last();
-            var previousHeikinAshi = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsGreen)
             {
@@ -246,9 +235,10 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
-            var currentCandle = model.Candles.Last();
-            var currentHeikinAshi = model.HeikinAshi.Last();
-            var previousHeikinAshi = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsRed)
             {
