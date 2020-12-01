@@ -23,7 +23,7 @@ namespace TSystem.Core
 
         Timer timer1 = new Timer(1 * 1000 * 60);
         Timer timer3 = new Timer(3 * 1000 * 60);
-        Timer timer5 = new Timer(0.125 * 1000 * 60);
+        Timer timer5 = new Timer(5 * 1000 * 60);
         Timer timer10 = new Timer(10 * 1000 * 60);
         Timer timer15 = new Timer(15 * 1000 * 60);
         Timer secondsTimer = new Timer(1000);
@@ -66,12 +66,12 @@ namespace TSystem.Core
             ProcessTimerTick(e, CandleType.Minute);
         }
 
-        private async void ProcessTimerTick(ElapsedEventArgs e, CandleType candleType)
+        private void ProcessTimerTick(ElapsedEventArgs e, CandleType candleType)
         {
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
 
-            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/11984386/5minute?user_id=ZW2177&oi=1&from=2020-11-27&to=2020-11-27&ciqrandom=1606573753955", Method.GET, DataFormat.Json);
+            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/11984386/5minute?user_id=ZW2177&oi=1&from=2020-12-01&to=2020-12-01&ciqrandom=1606573753955", Method.GET, DataFormat.Json);
 
             request.AddHeader("authorization", Token);
 
@@ -93,10 +93,9 @@ namespace TSystem.Core
                     Volume = candle[5],
                     CandleVolume = candle[5],
                     Instrument = 11984386,
-                });
-                OnCandleReceived(candles.Last(), CandleType.FiveMinute);
-                await Task.Delay(100);
+                });                
             }
+            OnCandleReceived(candles.Last(), CandleType.FiveMinute);
         }
 
         private static int GetMinutesToTrack(CandleType candleType)
