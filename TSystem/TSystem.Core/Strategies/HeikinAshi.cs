@@ -28,7 +28,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.PreviousHeikinAshi;
             var previousCandle = model.PreviousCandle;
 
-            if(currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 25)
+            if (currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 25)
             {
 
             }
@@ -45,13 +45,17 @@ namespace TSystem.Core.Strategies
 
                 signal.Price = model.Candles.Last().Close;
                 signal.TimeStamp = model.Candles.Last().TimeStamp;
-            }            
+            }
 
             UpdateLeadingHeikinAshi(model);
             UpdateLeadingCandle(model);
 
             if (signal.SignalType == SignalType.Entry && (currentCandle.Body < 5m || currentHeikinAshi.Body < 5m))
                 signal = new Signal() { };
+
+            //if (signal.SignalType == SignalType.Entry && (currentCandle.CandleVolume < model.AverageVolume) && model.Candles.Count >= 10)
+            //    signal = new Signal() { };
+
             return signal;
         }
         private Signal LongEntry(AnalysisModel model)
@@ -69,9 +73,12 @@ namespace TSystem.Core.Strategies
                 // Strong reverse trend
                 if (currentHeikinAshi.Close > previousHeikinAshi.Open && currentCandle.Body > model.AverageCandleBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
-                    signal.SignalType = SignalType.Entry;
-                    signal.TradeType = TradeType.Long;
-                    signal.Strength = 50;
+                    if (currentCandle.IsGreen)
+                    {
+                        signal.SignalType = SignalType.Entry;
+                        signal.TradeType = TradeType.Long;
+                        signal.Strength = 50;
+                    }
                     // Only up move
                     if (currentHeikinAshi.HasLowerWick == false)
                     {
@@ -140,9 +147,12 @@ namespace TSystem.Core.Strategies
             {
                 if (currentHeikinAshi.Close < previousHeikinAshi.Open && currentCandle.Body > model.AverageCandleBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
-                    signal.SignalType = SignalType.Entry;
-                    signal.TradeType = TradeType.Short;
-                    signal.Strength = 50;
+                    if (currentCandle.IsRed)
+                    {
+                        signal.SignalType = SignalType.Entry;
+                        signal.TradeType = TradeType.Short;
+                        signal.Strength = 50;
+                    }
                     if (currentHeikinAshi.HasUpperWick == false)
                     {
                         signal.Strength += 5;

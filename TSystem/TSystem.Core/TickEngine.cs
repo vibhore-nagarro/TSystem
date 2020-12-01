@@ -61,12 +61,12 @@ namespace TSystem.Core
             SubscribeToInstruments();
         }
 
-        UInt32[] tokens = null;
+        UInt32[] tokens = new UInt32[] { 11984386 };
         decimal p1, p2;
         private void SubscribeToInstruments()
         {
             //tokens = new UInt32[] { 12084738 }; // - Nifty
-            tokens = new UInt32[] { 57477639, 57437447 }; // - Gold
+            //tokens = new UInt32[] { 57477639, 57437447 }; // - Gold
             //tokens = new UInt32[] { 780803 }; // - USDINR
             //tokens = new UInt32[] { 12084482 }; // - Bank Nifty
 

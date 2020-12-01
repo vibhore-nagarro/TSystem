@@ -50,8 +50,9 @@ namespace TSystem.Core
 
         public AnalysisEngine()
         {
-            marketDataEngine = new BackTestHistoricalDataEngine();
+            //marketDataEngine = new BackTestHistoricalDataEngine();
             //marketDataEngine = new LiveMarketDataEngine();
+            marketDataEngine = new HistoricalMarketDataEngine();
             tradeEngine = new TradeEngine();
             riskEngine = RiskEngine.Instance;
         }        
