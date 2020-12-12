@@ -29,27 +29,37 @@ namespace TSystem.Core
         {
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
-
-            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/11984386/5minute?user_id=ZW2177&oi=1&from=2020-12-10&to=2020-12-10&ciqrandom=1606573753955", Method.GET, DataFormat.Json);
-
-            request.AddHeader("authorization", Token);
-
-            dynamic result = JsonConvert.DeserializeObject(client.Execute(request).Content);
-            foreach (dynamic candle in result.data.candles)
+            string startDate = "2020-12-10";
+            string endDate = "2020-12-10";
+            uint[] instruments = new uint[]
             {
-                candles.Add(new Candle()
+                11984386, 11983362, 
+            };
+
+            foreach (uint instrument in instruments)
+            {
+                string uri = $"https://kite.zerodha.com/oms/instruments/historical/{instrument}/5minute?user_id=ZW2177&oi=1&from={startDate}&to={endDate}&ciqrandom=1606573753955";
+                RestRequest request = new RestRequest(uri, Method.GET, DataFormat.Json);
+
+                request.AddHeader("authorization", Token);
+
+                dynamic result = JsonConvert.DeserializeObject(client.Execute(request).Content);
+                foreach (dynamic candle in result.data.candles)
                 {
-                    TimeStamp = candle[0],
-                    Open = candle[1],
-                    Close = candle[4],
-                    High = candle[2],
-                    Low = candle[3],
-                    Volume = candle[5],
-                    CandleVolume = candle[5],
-                    Instrument = 11984386,
-                });
-                OnCandleReceived(candles.Last(), CandleType.FiveMinute);
-                await Task.Delay(100);
+                    candles.Add(new Candle()
+                    {
+                        TimeStamp = candle[0],
+                        Open = candle[1],
+                        Close = candle[4],
+                        High = candle[2],
+                        Low = candle[3],
+                        Volume = candle[5],
+                        CandleVolume = candle[5],
+                        Instrument = instrument,
+                    });
+                    OnCandleReceived(candles.Last(), CandleType.FiveMinute);
+                    await Task.Delay(100);
+                }
             }
         }
     }

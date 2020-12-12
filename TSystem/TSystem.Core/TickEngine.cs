@@ -61,7 +61,7 @@ namespace TSystem.Core
             SubscribeToInstruments();
         }
 
-        UInt32[] tokens = new UInt32[] { 11984386 };
+        UInt32[] tokens = new UInt32[] { 11984386, 11983362 };
         decimal p1, p2;
         private void SubscribeToInstruments()
         {
