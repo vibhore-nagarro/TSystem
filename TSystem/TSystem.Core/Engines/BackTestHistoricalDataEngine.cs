@@ -12,7 +12,7 @@ namespace TSystem.Core
 {
     public class BackTestHistoricalDataEngine : IMarketDataEngine
     {
-        public const string Token = "enctoken pDm8HGdrHTFdvlT3AZG7lW468cIPAfFMMlGilsCyB/9GeDpgqsBNG7BuNz8Sgk3KQcEkSEDs0mS22nkKHbkkDwaj2Jm9Gw==";
+        public const string Token = "enctoken puIpofbE/gTQ+Sko42nvcOvHlWGEf+jFWV+5Tl7lq8kS7dJbnSNbgHh/e1GGqCss/ZCfq0eF0osCsXwmWFyzNdfroJdhiA==";
         public event CandleReceivedEventHandler CandleReceived;
 
         private void OnCandleReceived(Candle candle, CandleType type)
@@ -30,7 +30,7 @@ namespace TSystem.Core
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
 
-            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/11984386/5minute?user_id=ZW2177&oi=1&from=2020-11-27&to=2020-11-27&ciqrandom=1606573753955", Method.GET, DataFormat.Json);
+            RestRequest request = new RestRequest("https://kite.zerodha.com/oms/instruments/historical/11984386/5minute?user_id=ZW2177&oi=1&from=2020-12-10&to=2020-12-10&ciqrandom=1606573753955", Method.GET, DataFormat.Json);
 
             request.AddHeader("authorization", Token);
 

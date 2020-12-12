@@ -28,20 +28,21 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.PreviousHeikinAshi;
             var previousCandle = model.PreviousCandle;
 
-            if (currentCandle.TimeStamp.Hour == 09 && currentCandle.TimeStamp.Minute == 25)
+            if (currentCandle.TimeStamp.Hour == 12 && currentCandle.TimeStamp.Minute == 50)
             {
 
             }
             if (currentHeikinAshi.Body.Percentage(model.AverageHeikinAshiBody) > 20 && currentCandle.Body.Percentage(model.AverageCandleBody) > 20)
             {
-                var newSignal = LongEntry(model);
-                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
-                newSignal = ShortEntry(model);
-                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
-                newSignal = LongExit(model);
+                var newSignal = LongExit(model);
                 if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
                 newSignal = ShortExit(model);
                 if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                newSignal = LongEntry(model);
+                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                newSignal = ShortEntry(model);
+                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                
 
                 signal.Price = model.Candles.Last().Close;
                 signal.TimeStamp = model.Candles.Last().TimeStamp;
