@@ -38,6 +38,7 @@ namespace TSystem.Core
 
             foreach (uint instrument in instruments)
             {
+                uint index = 0;
                 string uri = $"https://kite.zerodha.com/oms/instruments/historical/{instrument}/5minute?user_id=ZW2177&oi=1&from={startDate}&to={endDate}&ciqrandom=1606573753955";
                 RestRequest request = new RestRequest(uri, Method.GET, DataFormat.Json);
 
@@ -46,7 +47,7 @@ namespace TSystem.Core
                 dynamic result = JsonConvert.DeserializeObject(client.Execute(request).Content);
                 foreach (dynamic candle in result.data.candles)
                 {
-                    candles.Add(new Candle()
+                    Candle newCandle = new Candle()
                     {
                         TimeStamp = candle[0],
                         Open = candle[1],
@@ -56,9 +57,13 @@ namespace TSystem.Core
                         Volume = candle[5],
                         CandleVolume = candle[5],
                         Instrument = instrument,
-                    });
-                    OnCandleReceived(candles.Last(), CandleType.FiveMinute);
-                    await Task.Delay(100);
+                        Index = index++,
+                    };
+                    if (newCandle.Validate() == false) throw new InvalidOperationException();
+                    candles.Add(newCandle);
+                    
+                    OnCandleReceived(newCandle, CandleType.FiveMinute);
+                    await Task.Delay(5);
                 }
             }
         }

@@ -28,7 +28,7 @@ namespace TSystem.Core.Strategies
             var previousHeikinAshi = model.PreviousHeikinAshi;
             var previousCandle = model.PreviousCandle;
 
-            if (currentCandle.TimeStamp.Hour == 12 && currentCandle.TimeStamp.Minute == 50)
+            if (currentCandle.TimeStamp.Hour == 10 && currentCandle.TimeStamp.Minute == 50)
             {
 
             }
@@ -216,7 +216,8 @@ namespace TSystem.Core.Strategies
             if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsGreen)
             {
                 if (currentHeikinAshi.Body < previousHeikinAshi.Body && currentHeikinAshi.Close < previousHeikinAshi.Close
-                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsRed)
+                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsRed
+                    && currentCandle.Close < (previousCandle.IsGreen ? previousCandle.Open : previousCandle.Close))
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Long;
@@ -254,7 +255,8 @@ namespace TSystem.Core.Strategies
             if (currentHeikinAshi.IsRed && previousHeikinAshi.IsRed)
             {
                 if (currentHeikinAshi.Body < previousHeikinAshi.Body && currentHeikinAshi.Close > previousHeikinAshi.Close
-                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsGreen)
+                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsGreen
+                    && currentCandle.Close > (previousCandle.IsGreen ? previousCandle.Close : previousCandle.Open))
                 {
                     signal.SignalType = SignalType.Exit;
                     signal.TradeType = TradeType.Short;

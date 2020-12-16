@@ -75,6 +75,7 @@ namespace TSystem.Core
                 signal = strategy.Apply(analysisModel);
                 //signal = ApplyFilter1(signal);
                 //signal = ApplyFilter2(signal);
+                signal = ApplyFilter3(signal);
 
                 signal.Instrument = instrument;
             }
@@ -140,6 +141,20 @@ namespace TSystem.Core
                     signal = new Signal() { Price = 0, SignalType = SignalType.None };
                 }
             }
+
+            return signal;
+        }
+
+        private Signal ApplyFilter3(Signal signal)
+        {
+            if (analysisModel.Candles.Count < 2)
+                return signal;
+
+            // Current candle color must match the direction of signal
+            if (signal.IsLongEntry() && Model.CurrentCandle.IsGreen == false)
+                signal = new Signal() { Price = 0, SignalType = SignalType.None };
+            if (signal.IsShortEntry() && Model.CurrentCandle.IsRed == false)
+                signal = new Signal() { Price = 0, SignalType = SignalType.None };
 
             return signal;
         }

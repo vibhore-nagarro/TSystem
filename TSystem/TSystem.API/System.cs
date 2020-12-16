@@ -15,8 +15,8 @@ namespace TSystem.API
     {
         private static AnalysisEngine analysisEngine;
         static HubConnection connection;
-        static string serverURL = "https://tsystem-api.azurewebsites.net/analysis";
-        //static string serverURL = "https://localhost:44340/analysis";
+        //static string serverURL = "https://tsystem-api.azurewebsites.net/analysis";
+        static string serverURL = "https://localhost:44340/analysis";
 
         public async static void Start()
         {

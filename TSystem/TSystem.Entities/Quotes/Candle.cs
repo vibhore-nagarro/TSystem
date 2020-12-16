@@ -9,8 +9,8 @@ namespace TSystem.Entities
     {
         #region Properties
 
-        public uint Instrument { get; set; }
-        public uint Index { get; set; }
+        public uint Instrument { get; set; } = uint.MaxValue;
+        public uint Index { get; set; } = uint.MaxValue;
         public bool IsRed => Open > Close;
 
         public bool IsGreen => Open <= Close;
@@ -41,6 +41,10 @@ namespace TSystem.Entities
 
         #region Methods
 
+        public bool Validate()
+        {
+            return Instrument != uint.MaxValue && Index != uint.MaxValue;
+        }
         public bool IsBullishHarami(Candle previousCandle)
         {
             if (previousCandle.IsGreen)
