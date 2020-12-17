@@ -16,14 +16,121 @@ namespace TSystem.Core.Strategies
         public Signal Apply(AnalysisModel model)
         {
             Signal signal = new Signal();
-            if (model.HeikinAshi.Count < 5) return signal;
+            if (model.HeikinAshi.Count < 3) return signal;
+            if (2m > model.HeikinAshi.Last().Body) return signal;
+            if (2m > model.Candles.Last().Body) return signal;
 
-            signal = LongEntry(model);
-            signal = ShortEntry(model);
-            signal = ShortExit(model);
-            signal = LongExit(model);
+            if (model.LeadingHeikinAshi == null) model.LeadingHeikinAshi = model.HeikinAshi.Last();
+            if (model.LeadingCandle == null) model.LeadingCandle = model.Candles.Last();
 
-            signal.Price = model.LTP;
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
+
+            if (currentCandle.TimeStamp.Hour == 10 && currentCandle.TimeStamp.Minute == 50)
+            {
+
+            }
+            if (currentHeikinAshi.Body.Percentage(model.AverageHeikinAshiBody) > 20 && currentCandle.Body.Percentage(model.AverageCandleBody) > 20)
+            {
+                var newSignal = LongExit(model);
+                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                newSignal = ShortExit(model);
+                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                newSignal = LongEntry(model);
+                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                newSignal = ShortEntry(model);
+                if (newSignal.SignalType != SignalType.None && newSignal.Strength > signal.Strength) signal = newSignal;
+                
+
+                signal.Price = model.Candles.Last().Close;
+                signal.TimeStamp = model.Candles.Last().TimeStamp;
+            }
+
+            UpdateLeadingHeikinAshi(model);
+            UpdateLeadingCandle(model);
+
+            if (signal.SignalType == SignalType.Entry && (currentCandle.Body < 5m || currentHeikinAshi.Body < 5m))
+                signal = new Signal() { };
+
+            //if (signal.SignalType == SignalType.Entry && (currentCandle.CandleVolume < model.AverageVolume) && model.Candles.Count >= 10)
+            //    signal = new Signal() { };
+
+            return signal;
+        }
+        private Signal LongEntry(AnalysisModel model)
+        {
+            Signal signal = new Signal();
+
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
+
+            // Trend Reversal
+            if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
+            {
+                // Strong reverse trend
+                if (currentHeikinAshi.Close > previousHeikinAshi.Open && currentCandle.Body > model.AverageCandleBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
+                {
+                    if (currentCandle.IsGreen)
+                    {
+                        signal.SignalType = SignalType.Entry;
+                        signal.TradeType = TradeType.Long;
+                        signal.Strength = 50;
+                    }
+                    // Only up move
+                    if (currentHeikinAshi.HasLowerWick == false)
+                    {
+                        signal.Strength += 5;
+                    }
+                    // Pulled back up from a low move
+                    if (previousHeikinAshi.HasLowerWick)
+                    {
+                        signal.Strength += 5;
+                        if (previousHeikinAshi.LowerWick.Percentage(previousHeikinAshi.Body) > 75)
+                        {
+                            signal.Strength += 5;
+                        }
+                    }
+                    // Strong up move
+                    if (currentHeikinAshi.HasUpperWick)
+                    {
+                        signal.Strength += 5;
+                        if (currentHeikinAshi.UpperWick.Percentage(currentHeikinAshi.Body) > 50)
+                        {
+                            signal.Strength += 5;
+                        }
+                    }
+                    // Move stronger than previous candle
+                    if (currentHeikinAshi.Body > previousHeikinAshi.Body)
+                    {
+                        signal.Strength += 10;
+                    }
+
+                    signal.Price = currentHeikinAshi.Close;
+                }                
+            }
+            if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsGreen)
+            {
+                if (currentHeikinAshi.Close > previousHeikinAshi.Close && currentCandle.Body > model.AverageCandleBody)
+                {
+                    signal.SignalType = SignalType.Entry;
+                    signal.TradeType = TradeType.Long;
+                    signal.Strength = 50;
+                    signal.Price = currentHeikinAshi.Close;
+                }
+            }
+            if (currentCandle.IsGreen)
+            {
+                if (currentCandle.Close > previousCandle.Open && currentCandle.Body > model.AverageCandleBody && currentCandle.IsCrossingLeadingCandle(model.LeadingCandle))
+                {
+                    signal.SignalType = SignalType.Entry;
+                    signal.TradeType = TradeType.Long;
+                    signal.Strength = 50;
+                }
+            }
 
             return signal;
         }
@@ -32,88 +139,104 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
-            var currentCandle = model.HeikinAshi.Last();
-            uint lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
-            var previousCandle = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
-            if (currentCandle.IsRed && previousCandle.IsGreen)
+            if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
             {
-                if (currentCandle.Close < previousCandle.Open)
+                if (currentHeikinAshi.Close < previousHeikinAshi.Open && currentCandle.Body > model.AverageCandleBody && currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
                 {
-                    signal.Type = SignalType.ShortEntry;
-                    signal.Strength = 50;
-                    if (previousCandle.HasUpperWick && previousCandle.UpperWick.Percentage(previousCandle.Body) > 75)
+                    if (currentCandle.IsRed)
                     {
-                        signal.Strength += 10;
+                        signal.SignalType = SignalType.Entry;
+                        signal.TradeType = TradeType.Short;
+                        signal.Strength = 50;
                     }
-                    if (currentCandle.HasUpperWick == false)
+                    if (currentHeikinAshi.HasUpperWick == false)
                     {
                         signal.Strength += 5;
                     }
-                    if (currentCandle.HasLowerWick)
+                    if (previousHeikinAshi.HasUpperWick)
                     {
                         signal.Strength += 5;
-                        if (currentCandle.LowerWick.Percentage(currentCandle.Body) > 50)
+                        if (previousHeikinAshi.UpperWick.Percentage(previousHeikinAshi.Body) > 75)
                         {
                             signal.Strength += 5;
                         }
                     }
-                    if (currentCandle.Body > previousCandle.Body)
+                    if (currentHeikinAshi.HasLowerWick)
+                    {
+                        signal.Strength += 5;
+                        if (currentHeikinAshi.LowerWick.Percentage(currentHeikinAshi.Body) > 50)
+                        {
+                            signal.Strength += 5;
+                        }
+                    }
+                    if (currentHeikinAshi.Body > previousHeikinAshi.Body)
                     {
                         signal.Strength += 10;
                     }
 
-                    signal.Price = currentCandle.Close;
-                }
+                    signal.Price = currentHeikinAshi.Close;
+                }                                
             }
-            return signal;
-        }
-
-        private Signal LongEntry(AnalysisModel model)
-        {
-            Signal signal = new Signal();
-
-            var currentCandle = model.HeikinAshi.Last();
-            uint lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
-            var previousCandle = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
-
-            if (currentCandle.IsGreen && previousCandle.IsRed)
+            if (currentHeikinAshi.IsRed && previousHeikinAshi.IsRed)
             {
-                if (currentCandle.Close > previousCandle.Open)
+                if (currentHeikinAshi.Close < previousHeikinAshi.Close && currentCandle.Body > model.AverageCandleBody)
                 {
-                    signal.Type = SignalType.LongEntry;
+                    signal.SignalType = SignalType.Entry;
+                    signal.TradeType = TradeType.Short;
                     signal.Strength = 50;
-                    if (currentCandle.HasLowerWick == false)
-                    {
-                        signal.Strength = 75;
-                    }
-                    if (currentCandle.Body > previousCandle.Body)
-                    {
-                        signal.Strength += 10;
-                    }
-
-                    signal.Price = currentCandle.Close;
+                    signal.Price = currentHeikinAshi.Close;
                 }
             }
-
+            if (currentCandle.IsRed)
+            {
+                if (currentCandle.Close < previousCandle.Open && currentCandle.Body > model.AverageCandleBody && currentCandle.IsCrossingLeadingCandle(model.LeadingCandle))
+                {
+                    signal.SignalType = SignalType.Entry;
+                    signal.TradeType = TradeType.Short;
+                    signal.Strength = 50;
+                }
+            }
             return signal;
         }
-
+        
         private Signal LongExit(AnalysisModel model)
         {
             Signal signal = new Signal();
 
-            var currentCandle = model.HeikinAshi.Last();
-            var previousCandle = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
-            if (currentCandle.IsGreen && previousCandle.IsGreen)
+            if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsGreen)
             {
-                if (currentCandle.Body < previousCandle.Body && currentCandle.Close < previousCandle.Close)
+                if (currentHeikinAshi.Body < previousHeikinAshi.Body && currentHeikinAshi.Close < previousHeikinAshi.Close
+                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsRed
+                    && currentCandle.Close < (previousCandle.IsGreen ? previousCandle.Open : previousCandle.Close))
                 {
-                    signal.Type = SignalType.LongExit;
+                    signal.SignalType = SignalType.Exit;
+                    signal.TradeType = TradeType.Long;
                     signal.Strength = 50;
 
-                    signal.Price = currentCandle.Close;
+                    signal.Price = currentHeikinAshi.Close;
+                }
+            }
+
+            if (currentHeikinAshi.IsRed && previousHeikinAshi.IsGreen)
+            {
+                if (currentHeikinAshi.Close < previousHeikinAshi.Open || currentHeikinAshi.Body < previousHeikinAshi.Body 
+                    || currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
+                {
+                    signal.SignalType = SignalType.Exit;
+                    signal.TradeType = TradeType.Long;
+                    signal.Strength = 50;
+
+                    signal.Price = currentHeikinAshi.Close;
                 }
             }
 
@@ -124,21 +247,62 @@ namespace TSystem.Core.Strategies
         {
             Signal signal = new Signal();
 
-            var currentCandle = model.HeikinAshi.Last();
-            var previousCandle = model.HeikinAshi.ElementAt(model.HeikinAshi.Count - 2);
+            var currentHeikinAshi = model.CurrentHeikinAshi;
+            var currentCandle = model.CurrentCandle;
+            var previousHeikinAshi = model.PreviousHeikinAshi;
+            var previousCandle = model.PreviousCandle;
 
-            if (currentCandle.IsRed && previousCandle.IsRed)
+            if (currentHeikinAshi.IsRed && previousHeikinAshi.IsRed)
             {
-                if (currentCandle.Body < previousCandle.Body && currentCandle.Close > previousCandle.Close)
+                if (currentHeikinAshi.Body < previousHeikinAshi.Body && currentHeikinAshi.Close > previousHeikinAshi.Close
+                    && currentHeikinAshi.Body < (currentHeikinAshi.UpperWick + currentHeikinAshi.LowerWick) && currentCandle.IsGreen
+                    && currentCandle.Close > (previousCandle.IsGreen ? previousCandle.Close : previousCandle.Open))
                 {
-                    signal.Type = SignalType.ShortExit;
+                    signal.SignalType = SignalType.Exit;
+                    signal.TradeType = TradeType.Short;
                     signal.Strength = 50;
 
-                    signal.Price = currentCandle.Close;
+                    signal.Price = currentHeikinAshi.Close;
+                }
+            }
+
+            if (currentHeikinAshi.IsGreen && previousHeikinAshi.IsRed)
+            {
+                if (currentHeikinAshi.Close > previousHeikinAshi.Open || currentHeikinAshi.Body < previousHeikinAshi.Body 
+                    || currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi))
+                {
+                    signal.SignalType = SignalType.Exit;
+                    signal.TradeType = TradeType.Short;
+                    signal.Strength = 50;
+
+                    signal.Price = currentHeikinAshi.Close;
                 }
             }
 
             return signal;
+        }
+
+        private static void UpdateLeadingHeikinAshi(AnalysisModel model)
+        {
+            var currentHeikinAshi = model.HeikinAshi.Last();
+            var lastIndex = model.HeikinAshi.Select(c => c.Index).OrderBy(item => Math.Abs(currentHeikinAshi.Index - item)).Skip(1).First();
+            var previousHeikinAshi = model.HeikinAshi.FirstOrDefault(c => c.Index == lastIndex);
+            if (currentHeikinAshi.IsCrossingLeadingCandle(model.LeadingHeikinAshi) && currentHeikinAshi.Body.Percentage(model.AverageHeikinAshiBody) < 400)
+            {
+                model.LeadingHeikinAshi = currentHeikinAshi;
+            }
+        }
+
+        private static void UpdateLeadingCandle(AnalysisModel model)
+        {
+            var currentCandle = model.Candles.Last();
+
+            uint lastIndex = model.Candles.Select(c => c.Index).OrderBy(item => Math.Abs(currentCandle.Index - item)).Skip(1).First();
+            var previousCandle = model.Candles.FirstOrDefault(c => c.Index == lastIndex);
+            if (currentCandle.IsCrossingLeadingCandle(model.LeadingCandle) && currentCandle.Body.Percentage(model.AverageCandleBody) < 400)
+            {
+                model.LeadingCandle = currentCandle;
+            }
         }
 
         private bool ConfirmPastTrend(AnalysisModel model)

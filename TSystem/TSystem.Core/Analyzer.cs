@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Timers;
 using TSystem.Core.Contracts;
 using TSystem.Core.Events;
@@ -15,10 +16,7 @@ namespace TSystem.Core
 {
     public class Analyzer
     {
-        #region Constants
-
-        const int Seconds = 1000;
-        const int Minutes = 1 * 60 * Seconds;
+        #region Constants        
 
         #endregion
 
@@ -32,11 +30,6 @@ namespace TSystem.Core
             SignalRecieved?.Invoke(this, new SignalRecievedEventArgs(signal));
         }
 
-        private void OnCandleRecieved(Candle candle)
-        {
-            CandleRecieved?.Invoke(this, new CandleRecievedEventArgs(candle));
-        }
-
         #endregion
 
         #region Data Members
@@ -44,10 +37,8 @@ namespace TSystem.Core
         private uint instrument;
         private AnalysisModel analysisModel = new AnalysisModel();
         private PerformanceModel performanceModel = new PerformanceModel();
-        private List<IStrategy> strategies = new List<IStrategy>();        
-
-        Timer secondsTimer = new Timer(Seconds);
-        Timer minutesTimer = new Timer(Minutes);
+        private List<IStrategy> strategies = new List<IStrategy>();
+        private ITradeEngine tradeManager = new TradeEngine();
 
         #endregion
 
@@ -58,7 +49,6 @@ namespace TSystem.Core
             this.instrument = instrument;
 
             InitializeStrategies();
-            InitializeTimers();
         }
 
         #endregion
@@ -75,29 +65,104 @@ namespace TSystem.Core
         {
             analysisModel.Ticks.Add(tick);
             analysisModel.LTP = tick.LastPrice;
-            //Debug.WriteLine($"LTP = {tick.LastPrice}");
         }
 
         public Signal Analyze()
         {
-            Signal signal = new Signal() { Price = 0, Type = SignalType.None };
+            Signal signal = new Signal() { Price = 0, SignalType = SignalType.None };
             foreach (IStrategy strategy in strategies)
             {
                 signal = strategy.Apply(analysisModel);
+                //signal = ApplyFilter1(signal);
+                //signal = ApplyFilter2(signal);
+                signal = ApplyFilter3(signal);
+
+                signal.Instrument = instrument;
             }
+            if (signal.SignalType != SignalType.None)
+            {
+                decimal pl = ComputePerformanceModel(signal);
+            }
+            
+            return signal;
+        }
+
+        /// <summary>
+        /// Filter signals by avergae candle body/gap (up/down) opening
+        /// </summary>
+        /// <param name="signal"></param>
+        /// <returns></returns>
+        private Signal ApplyFilter1(Signal signal)
+        {
+            if (analysisModel.Candles.Count < 2)
+                return signal;
+            var rsi = analysisModel.RSI();
+            var avgPrice = analysisModel.AveragePrice().Average();
+            var avgCandleBody = analysisModel.AverageCandleBody;
+            var avgVol = analysisModel.AverageVolume;
+
+            var currentCandle = analysisModel.Candles.Last();
+            var previousCandle = analysisModel.Candles.ElementAt(analysisModel.Candles.Count - 2);
+            if (signal.SignalType == SignalType.Entry)
+            {
+                // Reset signal if the deciding candle was too small
+                if (currentCandle.Body < (avgCandleBody / 2))
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+
+                // Reset signal if it opened with gap up/down
+                if ((currentCandle.Open - previousCandle.Open) > avgCandleBody)
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+            }
+
+            return signal;
+        }
+
+        /// <summary>
+        /// Filter signals by avergae candle body/gap (up/down) opening
+        /// </summary>
+        /// <param name="signal"></param>
+        /// <returns></returns>
+        private Signal ApplyFilter2(Signal signal)
+        {
+            if (analysisModel.Candles.Count < 5)
+                return signal;
+
+            if (signal.IsLongEntry())
+            {
+                if(Model.CandleTrend(3) == Trend.Up)
+                {
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+                }
+            }
+            if (signal.IsShortEntry())
+            {
+                if (Model.CandleTrend(3) == Trend.Down)
+                {
+                    signal = new Signal() { Price = 0, SignalType = SignalType.None };
+                }
+            }
+
+            return signal;
+        }
+
+        private Signal ApplyFilter3(Signal signal)
+        {
+            if (analysisModel.Candles.Count < 2)
+                return signal;
+
+            // Current candle color must match the direction of signal
+            if (signal.IsLongEntry() && Model.CurrentCandle.IsGreen == false)
+                signal = new Signal() { Price = 0, SignalType = SignalType.None };
+            if (signal.IsShortEntry() && Model.CurrentCandle.IsRed == false)
+                signal = new Signal() { Price = 0, SignalType = SignalType.None };
+
             return signal;
         }
 
         private void InitializeStrategies()
         {
             strategies.Add(new HeikinAshi());
-        }
-
-        private void InitializeTimers()
-        {
-            minutesTimer.Elapsed += Minute_Timer_Elapsed;
-            secondsTimer.Elapsed += SecondsTimer_Elapsed;
-            secondsTimer.Start();
+            //strategies.Add(new PreviousDayHighLowBreakout());            
         }
 
         private void BuildCandle(DateTime signalTime)
@@ -136,15 +201,10 @@ namespace TSystem.Core
                 heikinAshi.High = Math.Max(Math.Max(heikinAshi.Open, heikinAshi.Close), candle.High);
                 heikinAshi.Low = Math.Min(Math.Min(heikinAshi.Open, heikinAshi.Close), candle.Low);
             }
-            ulong netVolume = candle.Volume;
-            if (analysisModel.HeikinAshi.Count > 2)
-            {
-                netVolume = candle.Volume - analysisModel.HeikinAshi.ElementAt(analysisModel.HeikinAshi.Count - 2).Volume;
-            }
-            heikinAshi.CandleVolume = netVolume;
+            heikinAshi.CandleVolume = candle.CandleVolume;
             heikinAshi.Volume = candle.Volume;
             heikinAshi.TimeStamp = candle.TimeStamp;
-
+            heikinAshi.Instrument = candle.Instrument;
             heikinAshi.Index = (uint)analysisModel.HeikinAshi.Count;
             analysisModel.HeikinAshi.Add(heikinAshi);
         }
@@ -181,31 +241,17 @@ namespace TSystem.Core
             return candle;
         }
 
-        private void SecondsTimer_Elapsed(object sender, ElapsedEventArgs e)
+        public void ProcessCandle(Candle candle)
         {
-            if (e.SignalTime.Second == 0)
-            {
-                minutesTimer.Start();
-                secondsTimer.Stop();
-                secondsTimer.Dispose();
-            }
-        }
-        private void Minute_Timer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            BuildCandle(e.SignalTime);
+            Model.Candles.Add(candle);
             BuildHekinAshiCandle();
-            OnCandleRecieved(Model.HeikinAshi.Last());
 
             var signal = Analyze();
-            if (analysisModel.HeikinAshi.Any())
+
+            
+            if (signal.SignalType != SignalType.None)
             {
-                analysisModel.HeikinAshi.Last().Print();
-                analysisModel.HeikinAshi.Any();
-            }
-            if (signal.Type != SignalType.None)
-            {
-                OnSignalRecieved(signal);
-                Debug.WriteLine($"{signal.Type} @ {signal.Price}");
+                OnSignalRecieved(signal);                               
             }
         }
 
@@ -215,15 +261,18 @@ namespace TSystem.Core
             if (Model.Signals.Count > 0)
             {
                 Signal lastSignal = Model.Signals.Last();
-                if (signal.Type == SignalType.LongExit && lastSignal.Type == SignalType.LongEntry)
+                if (lastSignal.IsLongEntry() && (signal.IsLongExit() || signal.IsShortEntry()))
                 {
                     pl += signal.Price - lastSignal.Price;
                 }
-                if (signal.Type == SignalType.ShortExit && lastSignal.Type == SignalType.ShortEntry)
+                if (lastSignal.IsShortEntry() && (signal.IsShortExit() || signal.IsLongEntry() ))
                 {
                     pl += lastSignal.Price - signal.Price;
                 }
-                if (pl == 0) return pl;
+                if (pl == 0)
+                {
+                    return pl;
+                }
 
                 this.PerformanceModel.PL += pl;
                 this.PerformanceModel.Signals++;
@@ -233,9 +282,9 @@ namespace TSystem.Core
                     this.PerformanceModel.Losses++;
                 this.PerformanceModel.WinRate = Decimal.Round((this.PerformanceModel.Wins * 100.0m) / this.PerformanceModel.Signals, 2);
                 this.PerformanceModel.LossRate = Decimal.Round((this.PerformanceModel.Losses * 100.0m) / this.PerformanceModel.Signals, 2);
-                if (Model.LastTradePL > 0 && pl > 0)
+                if (Model.LastTradePL >= 0 && pl > 0)
                     this.PerformanceModel.WinningStreak++;
-                else if(Model.LastTradePL > 0 && pl < 0)
+                else if(Model.LastTradePL >= 0 && pl < 0)
                     this.PerformanceModel.LosingStreak++;
                 if (this.PerformanceModel.MaxGain < pl)
                     this.PerformanceModel.MaxGain = pl;
@@ -245,8 +294,8 @@ namespace TSystem.Core
                     this.PerformanceModel.TotalGain += pl;
                 if (pl < 0)
                     this.PerformanceModel.TotalLoss += pl;
-                this.PerformanceModel.AvgGain = this.PerformanceModel.TotalGain / this.PerformanceModel.Signals;
-                this.PerformanceModel.AvgLoss = this.PerformanceModel.TotalLoss / this.PerformanceModel.Signals;
+                this.PerformanceModel.AvgGain = this.PerformanceModel.Wins > 0 ? this.PerformanceModel.TotalGain / this.PerformanceModel.Wins : 0;
+                this.PerformanceModel.AvgLoss = this.PerformanceModel.Losses > 0 ? this.PerformanceModel.TotalLoss / this.PerformanceModel.Losses : 0;
                 this.PerformanceModel.PeriodOpen = this.Model.Candles.First().Open;
                 this.PerformanceModel.PeriodClose = this.Model.Candles.Last().Close;
                 if (this.PerformanceModel.PeriodHigh < this.Model.Candles.Last().High)
@@ -255,24 +304,45 @@ namespace TSystem.Core
                     this.PerformanceModel.PeriodLow = this.Model.Candles.Last().Low;
                 this.PerformanceModel.PeriodReturn = ((this.PerformanceModel.PeriodClose - this.PerformanceModel.PeriodOpen) * 100) / this.PerformanceModel.PeriodOpen;
 
+                this.PerformanceModel.LastTradePL = pl;
                 Model.LastTradePL = pl;
             }
             return pl;
         }
 
         string fileData = "";
-        public void BackTest()
+        public Signal BackTest()
         {
-            var signal = Analyze();
-            if (signal.Type != SignalType.None)
-            {
-                decimal pl = ComputePerformanceModel(signal);
+            //System.RunAll(analysisModel);
 
-                var date = analysisModel.HeikinAshi.Last().TimeStamp;
-                analysisModel.Signals.Add(signal);
-                Debug.WriteLine($"{signal.Type} @ {signal.Price}");
-                fileData = fileData + date + $", {signal.Type} , {signal.Price}" + Environment.NewLine;
-            }
+            var signal = Analyze();
+            var lastSignal = analysisModel.Signals.LastOrDefault();
+
+            if (signal.SignalType != SignalType.None)
+            {
+                if (lastSignal == null || ((lastSignal.IsLongEntry() && (signal.IsLongExit() || signal.IsShortEntry())) || 
+                     lastSignal.IsShortEntry() && (signal.IsShortExit() || signal.IsLongEntry()) ||
+                     lastSignal.IsLongExit() && (signal.IsLongEntry() || signal.IsShortEntry())   ||
+                     lastSignal.IsShortExit() && (signal.IsShortEntry() || signal.IsLongEntry())))
+                {
+                    System.RunAll(analysisModel);
+
+                    int quanity = 1;
+                    tradeManager.PlaceStoplossLimitOrder(signal.TradeType, ProductType.MIS, quanity, signal.Price, signal.Price);
+
+                    decimal pl = ComputePerformanceModel(signal);
+
+                    var date = analysisModel.HeikinAshi.Last().TimeStamp;
+                    analysisModel.Signals.Add(signal);
+                    
+                    fileData = fileData + date + $", {signal.TradeType} - {signal.SignalType} , {signal.Price}" + Environment.NewLine;
+                }
+                else
+                {
+                    signal = new Signal() { SignalType = SignalType.None, TradeType = TradeType.None };
+                }
+            }            
+            return signal;
         }
 
         public void DumpOutput()

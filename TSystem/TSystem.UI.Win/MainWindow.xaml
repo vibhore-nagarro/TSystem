@@ -1,0 +1,100 @@
+﻿<Window x:Class="TSystem.UI.Win.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TSystem.UI.Win"
+        mc:Ignorable="d" WindowState="Maximized"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid>
+        <TabControl>
+            <TabItem Header="Candles">
+                <ListView ItemsSource="{Binding Candles}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=d}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Open}" Header="Open" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding High}" Header="High" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Low}" Header="Low" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Close}" Header="Close" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Volume}" Header="Volume" />
+                            <GridViewColumn Header="Color">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="Black" BorderThickness="1" Background="White">
+                                            <Rectangle Width="25" Height="25" Margin="1" Stroke="Black">
+                                                <Rectangle.Style>
+                                                    <Style TargetType="Rectangle">
+                                                        <Setter Property="Fill" Value="White"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsGreen}" Value="True">
+                                                                <Setter Property="Fill" Value="Green" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsRed}" Value="True">
+                                                                <Setter Property="Fill" Value="Red" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Rectangle.Style>
+                                            </Rectangle>
+                                        </Border>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="HeikinAshi">
+                <ListView ItemsSource="{Binding HeikinAshi}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=d}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Open}" Header="Open" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding High}" Header="High" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Low}" Header="Low" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Close}" Header="Close" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Volume}" Header="Volume" />
+                            <GridViewColumn Header="Color">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="Black" BorderThickness="1" Background="White">
+                                            <Rectangle Width="25" Height="25" Margin="1" Stroke="Black">
+                                                <Rectangle.Style>
+                                                    <Style TargetType="Rectangle">
+                                                        <Setter Property="Fill" Value="White"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding IsGreen}" Value="True">
+                                                                <Setter Property="Fill" Value="Green" />
+                                                            </DataTrigger>
+                                                            <DataTrigger Binding="{Binding IsRed}" Value="True">
+                                                                <Setter Property="Fill" Value="Red" />
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Rectangle.Style>
+                                            </Rectangle>
+                                        </Border>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+            <TabItem Header="Signals">
+                <ListView ItemsSource="{Binding Signals}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TimeStamp, StringFormat=d}" Header="TimeStamp" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding TradeType}" Header="TradeType" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding SignalType}" Header="SignalType" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Strength}" Header="Strength" />
+                            <GridViewColumn Width="100" DisplayMemberBinding="{Binding Price}" Header="Price" />
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>

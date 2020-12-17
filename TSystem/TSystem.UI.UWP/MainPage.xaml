@@ -1,0 +1,123 @@
+﻿<Page
+    x:Class="TSystem.UI.UWP.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TSystem.UI.UWP"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"   
+    xmlns:controls="using:Microsoft.Toolkit.Uwp.UI.Controls"
+    xmlns:Interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:Core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:Converters="using:TSystem.UI.UWP.Converters"
+    mc:Ignorable="d" 
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+    <Page.Resources>
+        <ResourceDictionary>
+            <Converters:DateTimeFormatConverter x:Key="ShortDateConverter" ConvertTo="Time"/>
+            <Converters:NumberRoundConverter x:Key="NumberRoundConverter" DecimalPlaces="4"/>
+        </ResourceDictionary>
+    </Page.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Column="0" Margin="0 32">
+            <TextBlock Text="Instruments" Margin="5 10" FontWeight="Bold" HorizontalTextAlignment="Center"/>
+            <ListBox ItemsSource="{Binding Tokens}" SelectedItem="{Binding SelectedToken,Mode=TwoWay}" Margin="5 0" />
+        </StackPanel>
+        
+        <controls:TabView Grid.Column="1">
+            <controls:TabViewItem Header="Candles">
+                <controls:DataGrid ItemsSource="{Binding FilteredCandles}" AutoGenerateColumns="False">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Converter={StaticResource ShortDateConverter}}"/>
+                        <controls:DataGridTextColumn Header="Open" Binding="{Binding Open, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="High" Binding="{Binding High, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Low" Binding="{Binding Low, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Close" Binding="{Binding Close, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Body" Binding="{Binding Body, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Length" Binding="{Binding Length, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Volume" Binding="{Binding CandleVolume}"/>
+                        <controls:DataGridTemplateColumn Header="Trend">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="Black" BorderThickness="1" Background="White" Width="30" Height="30" >
+                                        <Rectangle Width="25" Height="25" Margin="1" Stroke="Black" x:Name="Rectangle">
+                                            <Interactivity:Interaction.Behaviors>
+                                                <Core:DataTriggerBehavior Binding="{Binding IsGreen}" Value="True">
+                                                    <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Green" />
+                                                </Core:DataTriggerBehavior>
+                                                <Core:DataTriggerBehavior Binding="{Binding IsRed}" Value="True">
+                                                    <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Red" />
+                                                </Core:DataTriggerBehavior>
+                                            </Interactivity:Interaction.Behaviors>
+                                        </Rectangle>
+                                    </Border>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </controls:TabViewItem>
+            <controls:TabViewItem Header="HeikinAshi">
+                <controls:DataGrid ItemsSource="{Binding FilteredHeikinAshi}" AutoGenerateColumns="False">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Converter={StaticResource ShortDateConverter}}"/>
+                        <controls:DataGridTextColumn Header="Open" Binding="{Binding Open, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="High" Binding="{Binding High, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Low" Binding="{Binding Low, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Close" Binding="{Binding Close, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Body" Binding="{Binding Body, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Length" Binding="{Binding Length, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Volume" Binding="{Binding CandleVolume}"/>
+                        <controls:DataGridTemplateColumn Header="Trend">
+                            <controls:DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="Black" BorderThickness="1" Background="White" Width="30" Height="30" >
+                                        <Rectangle Width="25" Height="25" Margin="1" Stroke="Black" x:Name="Rectangle">
+                                            <Interactivity:Interaction.Behaviors>
+                                                <Core:DataTriggerBehavior Binding="{Binding IsGreen}" Value="True">
+                                                    <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Green" />
+                                                </Core:DataTriggerBehavior>
+                                                <Core:DataTriggerBehavior Binding="{Binding IsRed}" Value="True">
+                                                    <Core:ChangePropertyAction TargetObject="{Binding ElementName=Rectangle}" PropertyName="Fill" Value="Red" />
+                                                </Core:DataTriggerBehavior>
+                                            </Interactivity:Interaction.Behaviors>
+                                        </Rectangle>
+                                    </Border>
+                                </DataTemplate>
+                            </controls:DataGridTemplateColumn.CellTemplate>
+                        </controls:DataGridTemplateColumn>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </controls:TabViewItem>
+            <controls:TabViewItem Header="Signals">
+                <controls:DataGrid ItemsSource="{Binding FilteredSignals}" AutoGenerateColumns="False">
+                    <controls:DataGrid.Columns>
+                        <controls:DataGridTextColumn Header="TimeStamp" Binding="{Binding TimeStamp, Converter={StaticResource ShortDateConverter}}"/>
+                        <controls:DataGridTextColumn Header="TradeType" Binding="{Binding TradeType}"/>
+                        <controls:DataGridTextColumn Header="SignalType" Binding="{Binding SignalType}"/>
+                        <controls:DataGridTextColumn Header="Price" Binding="{Binding Price, Converter={StaticResource NumberRoundConverter}}"/>
+                        <controls:DataGridTextColumn Header="Strength" Binding="{Binding Strength}"/>
+                    </controls:DataGrid.Columns>
+                </controls:DataGrid>
+            </controls:TabViewItem>
+            <controls:TabViewItem Header="Logs">
+                <ListBox ItemsSource="{Binding Logs}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Message}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </controls:TabViewItem>
+            <controls:TabViewItem Header="Configuration">
+                <StackPanel Margin="5">
+                    <ComboBox ItemsSource="{Binding MarketEngineModes}" SelectedItem="{Binding SelectedMarketEngineMode, Mode=TwoWay}" Margin="5"/>
+                    <Button Margin="5" Click="OnUpdate">Update</Button>
+                </StackPanel>
+            </controls:TabViewItem>
+        </controls:TabView>
+    </Grid>
+</Page>

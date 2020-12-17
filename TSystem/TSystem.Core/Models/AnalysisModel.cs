@@ -1,10 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using TA = TicTacTec.TA.Library;
 using TSystem.Entities;
+using System.Diagnostics;
+using TSystem.Entities.Enums;
 
 namespace TSystem.Core.Models
 {
+    public class MACD
+    {
+        public decimal Value { get; set; }
+        public decimal Signal { get; set; }
+        public decimal Histogram { get; set; }
+    }
+
+    public class Stochastic
+    {
+        public decimal Value { get; set; }
+        public decimal Signal { get; set; }
+    }
+
+
     public class AnalysisModel
     {
         #region Fields
@@ -50,6 +68,14 @@ namespace TSystem.Core.Models
             }
         }
 
+        public Candle LeadingHeikinAshi { get; set; }
+        public Candle LeadingCandle { get; set; }
+        public Candle CurrentHeikinAshi { get { return HeikinAshi.Last(); } }
+        public Candle CurrentCandle { get { return Candles.Last(); } }
+        public Candle PreviousHeikinAshi { get { return HeikinAshi.OrderByDescending(c => c.Index).Skip(1).First(); } }
+        public Candle PreviousCandle { get { return Candles.OrderByDescending(c => c.Index).Skip(1).First(); } }
+
+        
         public decimal ProfitLoss
         {
             get;
@@ -61,110 +87,149 @@ namespace TSystem.Core.Models
         public decimal LastTradePL { get; set; }
         public decimal PeriodPeak { get; set; }
         public decimal PeriodTrough { get; set; }
-        public bool IsPositionOpen { get; set; }
-        //public TradeType PositionType { get; set; }
+        public decimal PreviousLow { get; set; } = decimal.MaxValue;
+        public decimal PreviousHigh { get; set; } = decimal.MinValue;
+
         #endregion
 
         #region Methods
 
-        //public List<decimal> AveragePrice()
-        //{
-        //    return Candles.Select(candle => (candle.Open + candle.High + candle.Low + candle.Close) / 4).ToList();
-        //}
+        public List<decimal> AveragePrice()
+        {
+            return Candles.Select(candle => (candle.Open + candle.High + candle.Low + candle.Close) / 4).ToList();
+        }
 
-        //public long AverageVolume()
-        //{
-        //    return (long)Candles.Select(x => x.Volume).Average();
-        //}
+        public decimal AverageCandleBody => Candles.Average(c => c.Body) / 2;
+        
 
-        //public long AverageVolume(int period)
-        //{
-        //    return (long)Candles.Skip(Candles.Count - period).Take(period).Select(x => x.Volume).Average();
-        //}
+        public decimal AverageCandleLength => Candles.Average(c => c.Length);
+        public decimal AverageHeikinAshiBody => HeikinAshi.Average(c => c.Body);
 
-        //public List<decimal> SMA(int period)
-        //{
-        //    int startIndex, count;
-        //    double[] sma = new double[Candles.Count];
 
-        //    Core.Sma(0, Candles.Count - 1, Candles.Select(quote => quote.Close).Cast<float>().ToArray(), period, out startIndex, out count, sma);
+        public decimal AverageHeikinAshiLength => HeikinAshi.Average(c => c.Length);
 
-        //    return sma.Select(x => (decimal)x).ToList();
-        //}
 
-        //public List<decimal> EMA(int period)
-        //{
-        //    int startIndex, count;
-        //    double[] ema = new double[Candles.Count];
+        public ulong AverageVolume => (ulong)Candles.Average(x => (decimal)x.Volume);
 
-        //    Core.Ema(0, Candles.Count - 1, Candles.Select(quote => (float)quote.Close).ToArray(), period, out startIndex, out count, ema);
+        public decimal AveragePriceMovePerCandle => Candles.Count == 1 ? Candles[0].Body : Candles.Skip(1).Select(c => c.Close - Candles[Candles.IndexOf(c) - 1].Close).Average();
 
-        //    return ema.Select(x => (decimal)x).Take(ema.Count() - period + 1).ToList();
-        //}
 
-        //public List<MACD> MACD(int fastPeriod = 12, int slowPeriod = 26, int signalPeriod = 9)
-        //{
-        //    int startIndex, count;
-        //    double[] macd = new double[Candles.Count];
-        //    double[] macdSignal = new double[Candles.Count];
-        //    double[] macdHistogram = new double[Candles.Count];
-        //    List<MACD> macdData = new List<MACD>();
+        public ulong AverageVolumeForPeriod(int period)
+        {
+            return (ulong)Candles.Skip(Candles.Count - period).Take(period).Average(x => (decimal)x.Volume);
+        }
+        public Trend CandleTrend(int candleCount)
+        {
+            if (Candles.Count < candleCount)
+                return Trend.Unknown;
 
-        //    Core.Macd(0, Candles.Count - 1, Candles.Select(quote => (float)quote.Close).ToArray(), fastPeriod, slowPeriod, signalPeriod, out startIndex, out count, macd, macdSignal, macdHistogram);
+            var candles = Candles.Skip(Candles.Count - candleCount);
+            var upCandlesCount = candles.Count(c => c.IsGreen);
+            var downCandlesCount = candles.Count(c => c.IsRed);
 
-        //    for (int index = 0; index < macd.Length; ++index)
-        //    {
-        //        macdData.Add(new MACD()
-        //        {
-        //            Value = (decimal)macd[index],
-        //            Signal = (decimal)macdSignal[index],
-        //            Histogram = (decimal)macdHistogram[index],
-        //        });
-        //    }
-        //    macdData = macdData.Take(count).ToList();
-        //    if (macdData.Count > 0)
-        //    {
-        //        Debug.WriteLine($"Tick({Candles.Count}), LTP = {Candles.Last().Close}, MACD = {macdData.Last().Value}, Signal = {macdData.Last().Signal}, Histogram = {macdData.Last().Histogram}");
-        //    }
-        //    return macdData;
-        //}
+            var firstCandle = candles.First();
+            var lastCandle = candles.Last();
+            
+            if(firstCandle.IsGreen)
+            {
+                if (lastCandle.Close > firstCandle.Close && upCandlesCount > downCandlesCount)
+                    return Trend.Up;
+                if (lastCandle.Close < firstCandle.Open && upCandlesCount < downCandlesCount)
+                    return Trend.Down;
+            }
+            if (firstCandle.IsRed)
+            {
+                if (lastCandle.Close > firstCandle.Open && upCandlesCount > downCandlesCount)
+                    return Trend.Up;
+                if (lastCandle.Close < firstCandle.Close && upCandlesCount < downCandlesCount)
+                    return Trend.Down;
+            }
 
-        //public List<decimal> RSI(int period)
-        //{
-        //    int startIndex, count;
-        //    double[] rsi = new double[Candles.Count];
+            return Trend.Sideways;
+        }
+        public List<decimal> SMA(int period)
+        {
+            int startIndex, count;
+            double[] sma = new double[Candles.Count];
+            
+            TA.Core.Sma(0, Candles.Count - 1, Candles.Select(quote => quote.Close).Cast<float>().ToArray(), period, out startIndex, out count, sma);
 
-        //    Core.Rsi(0, Candles.Count - 1, Candles.Select(quote => quote.Close).Cast<float>().ToArray(), period, out startIndex, out count, rsi);
+            return sma.Select(x => (decimal)x).ToList();
+        }
 
-        //    return rsi.Select(x => (decimal)x).ToList();
-        //}
+        public List<decimal> EMA(int period)
+        {
+            int startIndex, count;
+            double[] ema = new double[Candles.Count];
 
-        //public List<Stochastic> Stochastic(int periodK = 14, int periodD = 3, int periodDN = 3)
-        //{
-        //    List<Stochastic> stochastic = new List<Stochastic>();
+            TA.Core.Ema(0, Candles.Count - 1, Candles.Select(quote => (float)quote.Close).ToArray(), period, out startIndex, out count, ema);
 
-        //    //var Candles = GetData().ToList();
-        //    int start, count;
-        //    double[] slowK = new double[Candles.Count];
-        //    double[] slowD = new double[Candles.Count];
-        //    Core.Stoch(0, Candles.Count - 1, Candles.Select(x => (double)x.High).ToArray(), Candles.Select(x => (double)x.Low).ToArray(), Candles.Select(x => (double)x.Close).ToArray(), periodK, periodD, Core.MAType.Sma, periodDN, Core.MAType.Sma, out start, out count, slowK, slowD);
-        //    for (int i = 0; i < count; ++i)
-        //    {
-        //        stochastic.Add(new Stochastic() { Value = (decimal)slowD[i], Signal = (decimal)slowK[i] });
-        //    }
+            return ema.Select(x => (decimal)x).Take(ema.Count() - period + 1).ToList();
+        }
 
-        //    return stochastic.ToList();
-        //}
+        public List<MACD> MACD(int fastPeriod = 12, int slowPeriod = 26, int signalPeriod = 9)
+        {
+            int startIndex, count;
+            double[] macd = new double[Candles.Count];
+            double[] macdSignal = new double[Candles.Count];
+            double[] macdHistogram = new double[Candles.Count];
+            List<MACD> macdData = new List<MACD>();
 
-        //public List<decimal> WilliamR(int period)
-        //{
-        //    int startIndex, count;
-        //    double[] willR = new double[Candles.Count];
+            TA.Core.Macd(0, Candles.Count - 1, Candles.Select(quote => (double)quote.Close).ToArray(), fastPeriod, slowPeriod, signalPeriod, out startIndex, out count, macd, macdSignal, macdHistogram);
 
-        //    Core.WillR(0, Candles.Count - 1, Candles.Select(quote => (double)quote.High).ToArray(), Candles.Select(quote => (double)quote.Low).ToArray(), Candles.Select(quote => (double)quote.Close).ToArray(), period, out startIndex, out count, willR);
+            for (int index = 0; index < macd.Length; ++index)
+            {
+                macdData.Add(new MACD()
+                {
+                    Value = (decimal)macd[index],
+                    Signal = (decimal)macdSignal[index],
+                    Histogram = (decimal)macdHistogram[index],
+                });
+            }
+            macdData = macdData.Take(count).ToList();
+            if (macdData.Count > 0)
+            {
+                
+            }
+            return macdData;
+        }
 
-        //    return willR.Select(x => (decimal)x).ToList();
-        //}
+        public decimal RSI(int period = 14)
+        {
+            int startIndex, count;
+            double[] rsi = new double[Candles.Count];
+
+            TA.Core.Rsi(0, Candles.Count - 1, Candles.Select(quote => (double)quote.Close).ToArray(), period, out startIndex, out count, rsi);
+
+            return rsi.Select(x => (decimal)x).Where(x => x != 0).LastOrDefault();
+        }
+
+        public List<Stochastic> Stochastic(int periodK = 14, int periodD = 3, int periodDN = 3)
+        {
+            List<Stochastic> stochastic = new List<Stochastic>();
+
+            //var Candles = GetData().ToList();
+            int start, count;
+            double[] slowK = new double[Candles.Count];
+            double[] slowD = new double[Candles.Count];
+            TA.Core.Stoch(0, Candles.Count - 1, Candles.Select(x => (double)x.High).ToArray(), Candles.Select(x => (double)x.Low).ToArray(), Candles.Select(x => (double)x.Close).ToArray(), periodK, periodD, TA.Core.MAType.Sma, periodDN, TA.Core.MAType.Sma, out start, out count, slowK, slowD);
+            for (int i = 0; i < count; ++i)
+            {
+                stochastic.Add(new Stochastic() { Value = (decimal)slowD[i], Signal = (decimal)slowK[i] });
+            }
+
+            return stochastic.ToList();
+        }
+
+        public List<decimal> WilliamR(int period)
+        {
+            int startIndex, count;
+            double[] willR = new double[Candles.Count];
+
+            TA.Core.WillR(0, Candles.Count - 1, Candles.Select(quote => (double)quote.High).ToArray(), Candles.Select(quote => (double)quote.Low).ToArray(), Candles.Select(quote => (double)quote.Close).ToArray(), period, out startIndex, out count, willR);
+
+            return willR.Select(x => (decimal)x).ToList();
+        }
 
         //private List<Candle> GetData()
         //{

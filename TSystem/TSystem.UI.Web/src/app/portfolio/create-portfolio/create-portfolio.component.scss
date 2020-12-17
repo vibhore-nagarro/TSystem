@@ -1,0 +1,52 @@
+.container {
+    width: 100%;
+    min-width: 1280px;
+    margin: 20px auto;
+    .toolbar {
+        margin: 20px auto;
+        .createPortfolio {
+          float: right;
+          margin: 5px auto;
+        }
+    }
+    .holdings-table {
+      .symbol {
+        width: 15%;
+        max-width: 100px;
+      }
+      .qty {
+        width: 10%;
+      }
+      .price {
+        width: 12%;
+      }
+      .positive {
+        color: green;
+      }
+      .negative {
+        color: red;
+      }
+      .addButton {
+        padding: 0px;
+        width: 50px;
+        margin: 5px;
+        background-color: white;
+      }
+      .operation {
+        padding: 0px;
+      }
+      .addSign {
+        color: green;
+        font-size: 24px;
+        font-weight: bolder;
+        margin: 0px;
+      }
+      .removeSign {
+        color: red;
+        font-size: 24px;
+        font-weight: bolder;
+        margin: 0px;
+      }
+    }
+  }
+  

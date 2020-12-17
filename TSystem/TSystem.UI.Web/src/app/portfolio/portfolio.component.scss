@@ -1,0 +1,30 @@
+.container {
+  width: 100%;
+  min-width: 1280px;
+  margin: 20px auto;
+  // background: #f9f9f9;
+  .toolbar {
+      margin: 20px auto;
+      .createPortfolio {
+        float: right;
+      }
+  }
+  .holdings-table {
+    .symbol {
+      width: 22%;
+      max-width: 100px;
+    }
+    .qty {
+      width: 10%;
+    }
+    .price {
+      width: 12%;
+    }
+    .positive {
+      color: green;
+    }
+    .negative {
+      color: red;
+    }
+  }
+}

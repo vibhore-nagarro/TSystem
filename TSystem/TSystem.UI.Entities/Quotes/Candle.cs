@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 
 namespace TSystem.Entities
@@ -8,6 +9,7 @@ namespace TSystem.Entities
     {
         #region Properties
 
+        public uint Instrument { get; set; }
         public uint Index { get; set; }
         public bool IsRed => Open > Close;
 
@@ -135,7 +137,7 @@ namespace TSystem.Entities
         {
             string color = "None";
             color = IsRed ? "Red" : "Green";
-            return $"O={Open}, H={High}, L={Low}, C={Close}, {color}";
+            return $"T={TimeStamp.ToShortTimeString()}, O={Open}, H={High}, L={Low}, C={Close}, {color}";
         }
 
         #endregion
@@ -145,7 +147,8 @@ namespace TSystem.Entities
         public void Print()
         {
             var color = IsGreen ? "Green" : "Red";
-            Console.WriteLine($"O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
+            //Debug.WriteLine($"T={TimeStamp.ToShortDateString()}, O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
+            Debug.WriteLine($"T={TimeStamp.ToShortTimeString()}, O={Open.ToString("0.00")}, H={High.ToString("0.00")}, L={Low.ToString("0.00")}, C={Close.ToString("0.00")}, V={Volume}, NV={CandleVolume}, Color = {color}");
         }
 
         #endregion
