@@ -12,7 +12,7 @@ namespace TSystem.Core
 {
     public class BackTestHistoricalDataEngine : IMarketDataEngine
     {
-        public const string Token = "enctoken puIpofbE/gTQ+Sko42nvcOvHlWGEf+jFWV+5Tl7lq8kS7dJbnSNbgHh/e1GGqCss/ZCfq0eF0osCsXwmWFyzNdfroJdhiA==";
+        public const string Token = "enctoken NVlzoVDWwGHtGm7w8u2JQ/AqRpQzen855QsZTea8ItoVJRBBjviLrN84Ut9P9YxmN9zUvMOnHrsQZ/t7qUSeT5AKk0OAVQ==";
         public event CandleReceivedEventHandler CandleReceived;
 
         private void OnCandleReceived(Candle candle, CandleType type)
@@ -29,11 +29,11 @@ namespace TSystem.Core
         {
             RestClient client = new RestClient();
             List<Candle> candles = new List<Candle>();
-            string startDate = "2020-12-10";
-            string endDate = "2020-12-10";
+            string startDate = "2020-12-18";
+            string endDate = "2020-12-18";
             uint[] instruments = new uint[]
             {
-                11984386, 11983362, 
+                11984386, 11983362, 268660230,
             };
 
             foreach (uint instrument in instruments)
@@ -63,7 +63,7 @@ namespace TSystem.Core
                     candles.Add(newCandle);
                     
                     OnCandleReceived(newCandle, CandleType.FiveMinute);
-                    await Task.Delay(5);
+                    await Task.Delay(10);
                 }
             }
         }
